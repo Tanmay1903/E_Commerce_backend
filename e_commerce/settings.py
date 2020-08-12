@@ -37,7 +37,18 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'rest_framework',
+    'rest_framework_mongoengine',
+    'rest_framework.authentication',
+    'django_mongoengine.mongo_auth',
+    'django_mongoengine.mongo_admin',
+    'django_mongoengine',
+    'Users',
 ]
+
+AUTH_USER_MODEL = ('mongo_auth.MongoUser')
+
+MONGOENGINE_USER_DOCUMENT = 'Users.models.CustomUser'
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
@@ -54,7 +65,7 @@ ROOT_URLCONF = 'e_commerce.urls'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [],
+        'DIRS': [os.path.join(BASE_DIR, 'templates')],
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
@@ -69,9 +80,19 @@ TEMPLATES = [
 
 WSGI_APPLICATION = 'e_commerce.wsgi.application'
 
+AUTHENTICATION_BACKENDS = (
+    'social_core.backends.facebook.FacebookOAuth2',
+    'django_mongoengine.mongo_auth.backends.MongoEngineBackend',
 
+)
 # Database
 # https://docs.djangoproject.com/en/2.2/ref/settings/#databases
+REST_FRAMEWORK = {
+        "DEFAULT_AUTHENTICATION_CLASSES" : (
+            'rest_framework.authentication.SessionAuthentication',
+        )
+}
+
 
 DATABASES = {
     'default': {
@@ -80,7 +101,15 @@ DATABASES = {
     }
 }
 
-
+MONGODB_DATABASES = {
+    "default": {
+        "name": "E_commerce",
+        "host": "mongodb+srv://Tanmay1903:Tanmaymongodb@intern-9eye-at0b4.mongodb.net/E_commerce?retryWrites=true&w=majority",
+        "password": "Tanmaymongodb",
+        "username": "Tanmay1903",
+        "tz_aware": True, # if you using timezones in django (USE_TZ = True)
+    },
+}
 # Password validation
 # https://docs.djangoproject.com/en/2.2/ref/settings/#auth-password-validators
 
