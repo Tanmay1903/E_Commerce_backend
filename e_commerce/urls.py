@@ -6,4 +6,5 @@ from django_mongoengine import mongo_admin
 urlpatterns = [
     path('admin/', mongo_admin.site.urls),
     path('',include('Users.urls')),
+    path('',include('Product.urls')),
 ]

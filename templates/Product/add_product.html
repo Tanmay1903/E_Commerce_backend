@@ -1,0 +1,68 @@
+{% extends 'Product/base.html' %}
+{% block content %}
+{% if user.is_authenticated %}
+<h2 style="text-align:center">Registration Form</h2>
+
+<div class="card card-body">
+
+<form id="register" enctype="multipart/form-data">
+
+<div class="form-group">
+  <label for="product_name">Product Name</label>
+  <input type="text" class="form-control" id="product_name" name="product_name">
+</div>
+<div class="form-group">
+  <label for="Description">Description</label>
+  <input id="Description" class="form-control" type="text" name="Description">
+</div>
+<div class="form-group">
+  <label for="Quantity">Quantity</label>
+  <input id="Quantity" class="form-control" type="number" name="Quantity">
+</div>
+<div class="form-group ">
+<label for="price">Price</label>
+<input id="price" type="number" class="form-control" name="Price" value="0" />
+</div>
+<div class="form-group ">
+<label for="Category">Category</label>
+<select id="Category" align="center" class="form-control" name="Category" >
+        <option value="Electronics">Electronics</option>
+        <option value="Men">Men</option>
+        <option value="Women">Women</option>
+        <option value="Furniture">Furniture</option>
+        <option value="TVs & Appliances">TVs & Appliances</option>
+        <option value="Baby & Kids">Baby & Kids</option>
+        <option value="Sports">Sports</option>
+        <option value="Others">Others</option>
+</select>
+</div>
+<div class="form-group">
+<label for="frontpic">FrontPic</label>
+<input id="frontpic" type="file" class="form-control" name="FrontPic" accept="image/*"/>
+</div>
+<div class="form-group">
+<label for="backpic">BackPic</label>
+<input id="backpic" type="file" class="form-control" name="BackPic" accept="image/*"/>
+</div>
+<div class="form-group ">
+<label for="Discount">Discount</label>
+<input id="Discount" type="number" class="form-control" name="Discount" value="0" />
+</div>
+<div class="form-group">
+  <label for="Brand">Brand</label>
+  <input id="Brand" class="form-control" type="text" name="Brand">
+</div>
+<div class="form-group">
+  <label for="Model">Model</label>
+  <input id="Model" class="form-control" type="text" name="Model">
+</div>
+<button type="submit" class="btn btn-primary">Submit</button>
+  <a class="btn btn-warning" href="#">Cancel</a>
+</form>
+</div>
+  {% else %}
+      <script>
+      location.href = "#"
+      </script>
+  {% endif %}
+{% endblock %}

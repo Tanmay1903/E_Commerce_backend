@@ -12,7 +12,7 @@ User = get_user_document()
 
 class UserRegister(CreateAPIView):
     '''
-    An api for the customers(genral public)
+    An api for the customers(general public)
     to register themselves. Once the customers register
     themselves an email verification link will be send to them to complete the registeration
     process.

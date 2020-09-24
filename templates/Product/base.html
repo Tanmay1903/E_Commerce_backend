@@ -1,0 +1,101 @@
+{% load static %}
+<!doctype html>
+
+<html lang="en">
+<head>
+<!-- Required meta tags -->
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+<!-- Bootstrap CSS -->
+<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css" integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://www.w3schools.com/w3css/4/w3.css">
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+
+<title>CRM</title>
+<script src="https://kit.fontawesome.com/1709c1c67d.js" crossorigin="anonymous"></script>
+  <link href="https://fonts.googleapis.com/css?family=Ubuntu" rel="stylesheet">
+   <script   type="text/javascript" src="https://cdn.tiny.cloud/1/lkfg9rs8nkra487ch82fvvdmtod71i0emby2qdldy0fmx7lq/tinymce/5/tinymce.min.js" referrerpolicy="origin"></script>
+
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+
+</head>
+<body style="background-color: #EFE0EE">
+
+
+    {% include 'Product/navbar.html' %}
+  <div class="container">
+
+      {% block content %}
+      {% endblock %}
+  </div>
+  {#    <script src="https://code.jquery.com/jquery-3.4.1.slim.min.js" integrity="sha384-J6qa4849blE2+poT4WnyKhv5vZF5SrPo0iEjwBvKU7imGFAV0wwj1yYfoRSJoZ+n" crossorigin="anonymous"></script>#}
+      <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js" integrity="sha384-Q6E9RHvbIyZFJoft+2mJbHaEWldlvI9IOYy5n3zV9zzTtmI3UksdQRVvoxMfooAo" crossorigin="anonymous"></script>
+      <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/js/bootstrap.min.js" integrity="sha384-wfSDF2E50Y2D1uUdj0O3uMBJnjuUD4Ih7YwaYd1iqfktj0Uod8GCExl3Og8ifwB6" crossorigin="anonymous"></script>
+       <script>
+      setTimeout(function(){
+        if ($('#msg').length > 0) {
+          $('#msg').remove();
+        }
+      }, 5000)
+    </script>
+    </body>
+  </html>
+
+  <script type="text/javascript">
+  function getCookie(name) {
+      let cookieValue = null;
+      if (document.cookie && document.cookie !== '') {
+          const cookies = document.cookie.split(';');
+          for (let i = 0; i < cookies.length; i++) {
+              const cookie = cookies[i].trim();
+              // Does this cookie string begin with the name we want?
+              if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                  cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                  break;
+              }
+          }
+      }
+      return cookieValue;
+  }
+  const csrftoken = getCookie('csrftoken');
+  $.ajaxSetup({
+      beforeSend: function(xhr, settings) {
+             xhr.setRequestHeader("X-CSRFToken", csrftoken);
+
+      }
+  });
+
+$("#register").submit(function(e) {
+
+      e.preventDefault();
+
+      var url = "{% url 'addproduct' %}";
+      $.ajax({
+             type:'POST',
+             url: url,
+             content: 'multipart/form-data',
+             xhrFields: {
+             withCredentials: true
+             },
+              data:  new FormData(this),
+              contentType: false,
+              {#cache: false,#}
+              processData:false,
+              success: function(data,text)
+              {
+                  {#data = JSON.stringify(data)#}
+                  console.log(data['message'])
+                  alert(data['message'])
+                  location.reload()
+                  },
+              error: function (request,status,error)
+              {
+                  alert(request.responseText)
+
+              }
+              });
+              return false;
+      });
+</script>
