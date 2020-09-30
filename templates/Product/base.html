@@ -98,4 +98,31 @@ $("#register").submit(function(e) {
               });
               return false;
       });
+      $("#login").submit(function(e) {
+
+            e.preventDefault();
+
+            var url = "{% url 'userlogin' %}";
+            $.ajax({
+                   type:'POST',
+                   url: url,
+                   content: 'multipart/form-data',
+                   xhrFields: {
+                   withCredentials: true
+                   },
+                    data:  new FormData(this),
+                    contentType: false,
+                    {#cache: false,#}
+                    processData:false,
+                    success: function(data,text)
+                    {
+                        {#data = JSON.stringify(data)#}
+                        console.log(data)
+                        location.href = "{% url 'welcome' %}"
+                        },
+                    });
+                    return false;
+            });
+{% block script %}
+{% endblock %}
 </script>

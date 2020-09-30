@@ -47,3 +47,28 @@ class Products(DynamicDocument):
     Discount = fields.FloatField(blank = True)
     Brand = fields.StringField(max_length=255)
     Model = fields.StringField(max_length=255)
+
+    def json(self):
+        form_dict = {
+        "id" : str(self.id),
+        "product_name" : self.product_name,
+        "Description" : self.Description,
+        "Quantity" : self.Quantity,
+        "Price" : self.Price,
+        "Category" : self.Category,
+        "Discount" : self.Discount,
+        "Brand" : self.Brand,
+        "Model" : self.Model,
+        "manufacturing_details" : {
+                                    "Model_no" : self.manufacturing_details[0]["Model_no"],
+                                    "Release_date" : self.manufacturing_details[0]["Release_date"],
+                                    "Batch_no" : self.manufacturing_details[0]["Batch_no"]
+                                    },
+        "Shipping_details" : {
+                            "Weight" : self.Shipping_details[0]["Weight"],
+                            "Height" : self.Shipping_details[0]["Height"],
+                            "Width" : self.Shipping_details[0]["Width"],
+                            "Depth" : self.Shipping_details[0]["Depth"]
+                                },
+        }
+        return form_dict

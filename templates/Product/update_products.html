@@ -1,0 +1,129 @@
+{% extends 'Product/base.html' %}
+{% block content %}
+{% if user.is_authenticated %}
+<h2 style="text-align:center">Registration Form</h2>
+
+<div class="card card-body">
+
+<form id="update" enctype="multipart/form-data">
+
+<div class="form-group">
+  <label for="product_name">Product Name</label>
+  <input type="text" class="form-control" id="product_name" name="product_name" value = "{{data.product_name}}">
+</div>
+<div class="form-group">
+  <label for="Description">Description</label>
+  <input id="Description" class="form-control" type="text" name="Description" value = "{{data.Description}}">
+</div>
+<div class="form-group">
+  <label for="Quantity">Quantity</label>
+  <input id="Quantity" class="form-control" type="number" name="Quantity" value = "{{data.Quantity}}">
+</div>
+<div class="form-group ">
+<label for="price">Price</label>
+<input id="price" type="number" class="form-control" name="Price" value = "{{data.Price}}" />
+</div>
+<div class="form-group ">
+<label for="Category">Category</label>
+<select id="Category" align="center" class="form-control" name="Category" value = "{{data.Category}}">
+        <option value="Electronics">Electronics</option>
+        <option value="Men">Men</option>
+        <option value="Women">Women</option>
+        <option value="Furniture">Furniture</option>
+        <option value="TVs & Appliances">TVs & Appliances</option>
+        <option value="Baby & Kids">Baby & Kids</option>
+        <option value="Sports">Sports</option>
+        <option value="Others">Others</option>
+</select>
+</div>
+<div class="form-group">
+<label for="frontpic">FrontPic</label>
+<input id="frontpic" type="file" class="form-control" name="FrontPic" accept="image/*"/>
+</div>
+<div class="form-group">
+<label for="backpic">BackPic</label>
+<input id="backpic" type="file" class="form-control" name="BackPic" accept="image/*"/>
+</div>
+<div class="form-group ">
+<label for="Discount">Discount</label>
+<input id="Discount" type="number" class="form-control" name="Discount" value = "{{data.Discount}}"/>
+</div>
+<div class="form-group">
+  <label for="Brand">Brand</label>
+  <input id="Brand" class="form-control" type="text" name="Brand" value = "{{data.Brand}}">
+</div>
+<div class="form-group">
+  <label for="Model">Model</label>
+  <input id="Model" class="form-control" type="text" name="Model" value = "{{data.Model}}">
+</div>
+<div class="form-group">
+  <label for="Model_no">Model_no</label>
+  <input id="Model_no" class="form-control" type="text" name="Model_no" value = "{{data.manufacturing_details.Model_no}}">
+</div>
+<div class="form-group">
+  <label for="Release_date">Release_date</label>
+  <input id="Release_date" class="form-control" type="text" name="Release_date" value = "{{data.manufacturing_details.Release_date}}">
+</div>
+<div class="form-group">
+  <label for="Batch_no">Batch_no</label>
+  <input id="Batch_no" class="form-control" type="text" name="Batch_no" value = "{{data.manufacturing_details.Batch_no}}">
+</div>
+<div class="form-group">
+  <label for="Weight">Weight</label>
+  <input id="Weight" class="form-control" type="text" name="Weight" value = "{{data.Shipping_details.Weight}}">
+</div>
+<div class="form-group">
+  <label for="Height">Height</label>
+  <input id="Height" class="form-control" type="text" name="Height" value = "{{data.Shipping_details.Height}}">
+</div>
+<div class="form-group">
+  <label for="Width">Width</label>
+  <input id="Width" class="form-control" type="text" name="Width" value = "{{data.Shipping_details.Width}}">
+</div>
+<div class="form-group">
+  <label for="Depth">Depth</label>
+  <input id="Depth" class="form-control" type="text" name="Depth" value = "{{data.Shipping_details.Depth}}">
+</div>
+<button type="submit" class="btn btn-primary">Submit</button>
+  <a class="btn btn-warning" href="{% url 'welcome' %}">Cancel</a>
+</form>
+</div>
+  {% else %}
+      <script>
+      location.href = {% url 'userlogin' %}
+      </script>
+  {% endif %}
+{% endblock %}
+{% block script %}
+$("#update").submit(function(e) {
+
+      e.preventDefault();
+
+      var url = "{% url 'updateproduct' data.id %}";
+      $.ajax({
+             type:'POST',
+             url: url,
+             content: 'multipart/form-data',
+             xhrFields: {
+             withCredentials: true
+             },
+              data:  new FormData(this),
+              contentType: false,
+              {#cache: false,#}
+              processData:false,
+              success: function(data,text)
+              {
+                  {#data = JSON.stringify(data)#}
+                  console.log(data['message'])
+                  alert(data['message'])
+                  location.href = "{% url 'welcome' %}"
+                  },
+              error: function (request,status,error)
+              {
+                  alert(request.responseText)
+
+              }
+              });
+              return false;
+      });
+{% endblock %}

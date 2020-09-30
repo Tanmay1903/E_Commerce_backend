@@ -1,0 +1,81 @@
+{% extends 'Product/base.html' %}
+{% load static %}
+
+{% block content %}
+<h1>SparkCart</h1>
+<div style="display: flex;justify-content: space-between;padding-bottom: 1%">
+            <form type="get" action="">
+             <input style="width:8cm;height: 33px" id="search_box" type="text" name="search_box"  placeholder="Enter Product Name" >
+               <button id="search_submit" type="submit" class=" btn btn-info" >Submit</button>
+            </form>
+        <a type="button" class="btn btn-success " href="{% url 'add_product' %}">Add Product</a>
+    </div>
+
+    <div class="card card-body" style="height: 75vh;">
+    <div style="overflow: auto; ">
+    <table border="1" style="width:100%"  class="w3-table-all w3-hoverable">
+
+  <tr class="w3-light-grey">
+      <th colspan="2">Action</th>
+    <th>Product Name</th>
+    <th>Description</th>
+    <th>Quantity</th>
+      <th>Inventory_ID</th>
+      <th>Price</th>
+      <th>FrontPic</th>
+      <th>BackPic</th>
+      <th>Category</th>
+      <th>Discount</th>
+      <th>Brand</th>
+      <th>Model</th>
+  </tr>
+    <tr>
+
+
+        {% for value in data %}
+                <tr>
+        <td><a class="btn btn-sm btn-info" href="{% url 'update_product' value.id %}">Update</a></td>
+        {% if user.is_superuser %}
+                    <td><a class="btn btn-sm btn-danger" href="">Delete</a></td>
+         {% else %}
+            <td></td>
+        {% endif %}
+                    <td>{{ value.product_name}}</td>
+                    <td>{{ value.Description }}</td>
+                    <td>{{ value.Quantity }}</td>
+                    <td>{{ value.Inventory_ID }}</td>
+                    <td>{{ value.Price }}</td>
+                    <td><img height="100" width="100" src="/media/front_pic/{{ value.FrontPic}}"
+                             onerror="this.onerror=null;this.src='{% static '/Product/Images/logo.png' %}';"
+                             alt="">
+                        {% if user.is_superuser %}
+{#                        <input id='{{value.id}}' type='button' class='btn btn-danger'   onclick='delfront(this.id)' value='Delete'>#}
+                            <input id='{{value.id}}' type='button' class='btn btn-danger'   onclick='ConfirmFrontDelete(this.id)' value='Delete'>
+                        {% endif %}
+                        </td>
+
+                    <td><img height="100" width="100" src= "/media/back_pic/{{ value.BackPic }}" onerror="this.onerror=null;this.src='{% static '/Product/Images/logo.png' %}';" alt="" >
+                        {% if user.is_superuser %}
+                        <input id='{{value.id}}' type='button' class='btn btn-danger'   onclick='ConfirmBackDelete(this.id)' value='Delete'>
+                    {% endif %}
+                    </td>
+                    <!--
+                    <td><img height="100" width="100" src= "/api{{ MEDIA_URL }}other_pic/{{ value.OtherPic }}" onerror="this.onerror=null;this.src='{% static '/stores/Images/OWL72.png' %}';" alt="" >
+                        {% if user.is_superuser %}
+                        <input id='{{value.id}}' type='button' class='btn btn-danger'   onclick='ConfirmOtherDelete(this.id)' value='Delete'>
+                    {% endif %}
+                    </td>
+                    -->
+                    <td>{{ value.Category }}</td>
+                    <td>{{ value.Discount }}</td>
+                    <td>{{ value.Brand}}</td>
+                    <td>{{ value.Model}}</td>
+
+                </tr>
+                {% endfor %}
+    </tr>
+</table>
+    </div>
+    </div>
+
+{% endblock %}

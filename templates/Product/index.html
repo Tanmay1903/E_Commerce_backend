@@ -1,0 +1,23 @@
+{% extends 'Product/base.html'%}
+{% load static %}
+{% block content %}
+ <link rel="stylesheet" href="{% static 'Product/stylesheets/main.css'%}">
+    <form  id="login" method="post">
+    <div class="main" >
+
+        {% csrf_token %}
+    <p class="sign" align="center">Sign in</p>
+
+      <input class="un " type="text" align="center" placeholder="Email" name="email">
+      <input class="pass" type="password" align="center" placeholder="Password" name="password">
+
+      <button type="submit" class="submit" align="center" value='login'>Sign in</button>
+        <p class="forgot" style="color: dodgerblue" align="center"><a href="#">Forgot Password?</a></p>
+        <div align="center">
+     {% include 'Product/messages.html' %}
+    </div>
+
+
+    </div>
+    </form>
+{% endblock %}
