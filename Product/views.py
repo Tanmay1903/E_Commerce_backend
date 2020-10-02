@@ -12,6 +12,7 @@ from .forms import UpdateForm
 from django.http import HttpResponseRedirect
 from Users.auth import IsAuthenticated
 from django.contrib.auth import login,logout
+from django.shortcuts import redirect
 
 class Add_Products(GenericAPIView):
     serializer_class = ProductsSerializer
@@ -65,9 +66,9 @@ class UpdateProduct(GenericAPIView):
             if request.FILES.get('BackPic'):
                 newdoc1 = request.FILES['BackPic']
                 ext = str(newdoc1).rsplit('.', 1)[1].lower()
-                if data.BackPic==None:
+                if not data.BackPic:
                     data.BackPic = unique_filename
-                if data.BackPic is not  None:
+                if data.BackPic :
                     path1 = 'back_pic/' + data.BackPic
                     default_storage.delete(path1)
                 path1='back_pic/' + data.BackPic.rsplit('.', 1)[0].lower()+'.'+ext
@@ -77,9 +78,9 @@ class UpdateProduct(GenericAPIView):
             if request.FILES.get('FrontPic'):
                 newdoc2 = request.FILES['FrontPic']
                 ext = str(newdoc2).rsplit('.', 1)[1].lower()
-                if data.FrontPic==None:
+                if not data.FrontPic:
                     data.FrontPic = unique_filename
-                if data.FrontPic is not  None:
+                if data.FrontPic:
                     path2 = 'front_pic/' + data.FrontPic
                     default_storage.delete(path2)
                 path2 = 'front_pic/' + data.FrontPic.rsplit('.', 1)[0].lower()+'.' + ext
@@ -106,3 +107,84 @@ def user_logout(request):
     logout(request)
 
     return render(request,'Product/index.html')
+
+def search(request):
+    search_query = request.GET.get('search_box')
+    import re
+    try:
+        loc={"product_name": re.compile(search_query, re.IGNORECASE)}
+        loc1={"Category":re.compile(search_query,re.IGNORECASE)}
+        groups=Products._get_collection()
+        y=groups.find(loc)
+        z=groups.find(loc1)
+        y = list(y)
+        z=list(z)
+        for i in y:
+            i["id"] = i["_id"]
+        for i in z:
+            i["id"] = i["_id"]
+        y.extend(z)
+        res = []
+        for i in y:
+            if i not in res:
+                res.append(i)
+        if res :
+            return render(request,"Product/crm.html",{"data":res})
+        else:
+            return HttpResponse('No Product Found.')
+    except:
+        return HttpResponse("No Product Found.")
+
+@login_required()
+def delete_product(request, a):
+    '''
+    A function which allows the staff memebers(crm users)
+    to delete the existing store data
+    and then redirects to the crm page.
+    '''
+    order = Products.objects.get(id=a)
+    if request.method == "POST":
+        if order.BackPic:
+            path1 = 'back_pic/' + order.BackPic
+            default_storage.delete(path1)
+        if order.FrontPic:
+            path2 = 'front_pic/' + order.FrontPic
+            default_storage.delete(path2)
+        order.delete()
+        return redirect('../security/crm')
+    context = {'item': order}
+    return render(request, 'Product/delete.html', context)
+
+class DeleteFrontPic(GenericAPIView):
+
+    def post(self,request):
+        data=request.data
+        id=request.data.get('obj_id')
+        obj = Products.objects.get(pk=id)
+        if obj.FrontPic == "":
+            return Response({'message':'No Front Picture Found!'},status=status.HTTP_200_OK)
+        else:
+            path1 = 'front_pic/' + obj.FrontPic
+            default_storage.delete(path1)
+            del obj.FrontPic
+            obj.FrontPic = ""
+            obj.save()
+            return Response({'message': 'Front Picture Deleted'}, status=status.HTTP_200_OK)
+        return Response({'message':'Invalid ID'},status=status.HTTP_400_BAD_REQUEST)
+
+class DeleteBackPic(GenericAPIView):
+
+    def post(self,request):
+        data=request.data
+        id=request.data.get('obj_id')
+        obj = Products.objects.get(pk=id)
+        if obj.BackPic == "":
+            return Response({'message':'No Back Picture Found!'},status=status.HTTP_200_OK)
+        else:
+            path1 = 'back_pic/' + obj.BackPic
+            default_storage.delete(path1)
+            del obj.BackPic
+            obj.BackPic = ""
+            obj.save()
+            return Response({'message': 'Back Picture Deleted'}, status=status.HTTP_200_OK)
+        return Response({'message':'Invalid ID'},status=status.HTTP_400_BAD_REQUEST)

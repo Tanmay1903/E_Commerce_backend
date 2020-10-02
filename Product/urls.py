@@ -9,4 +9,8 @@ urlpatterns = [
     path('updateproduct/<str:a>',views.UpdateProduct.as_view(),name = 'updateproduct'),
     path('update_product/<str:a>',views.update_product,name = 'update_product'),
     path('logout/',views.user_logout,name='logout'),
+    path('search_product/',views.search,name='search_product'),
+    path('delete_product/<str:a>',views.delete_product,name='delete_product'),
+    path('delete_fpic/',views.DeleteFrontPic.as_view(),name='delete_fpic'),
+    path('delete_bpic/',views.DeleteBackPic.as_view(),name='delete_bpic'),
 ]

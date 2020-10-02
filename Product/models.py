@@ -31,7 +31,7 @@ class Ship_details(EmbeddedDocument):
 
 class Products(DynamicDocument):
     product_name = fields.StringField(max_length=255)
-    Description  = fields.StringField(max_length=255)
+    Description  = fields.StringField(max_length=600)
     manufacturing_details = fields.ListField(EmbeddedDocumentField(Manufact_details),blank=True)
     Shipping_details = fields.ListField(EmbeddedDocumentField(Ship_details),blank=True)
     Quantity = fields.IntField()
@@ -59,6 +59,8 @@ class Products(DynamicDocument):
         "Discount" : self.Discount,
         "Brand" : self.Brand,
         "Model" : self.Model,
+        "FrontPic" : self.FrontPic,
+        "BackPic" : self.BackPic,
         "manufacturing_details" : {
                                     "Model_no" : self.manufacturing_details[0]["Model_no"],
                                     "Release_date" : self.manufacturing_details[0]["Release_date"],
