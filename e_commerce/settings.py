@@ -46,6 +46,7 @@ INSTALLED_APPS = [
     'django_mongoengine',
     'Users',
     'Product',
+    'Review',
 ]
 
 AUTH_USER_MODEL = ('mongo_auth.MongoUser')

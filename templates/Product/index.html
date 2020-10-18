@@ -2,7 +2,7 @@
 {% load static %}
 {% block content %}
  <link rel="stylesheet" href="{% static 'Product/stylesheets/main.css'%}">
-    <form  id="login" method="post">
+    <form  action="{% url 'login' %}" method="post">
     <div class="main" >
 
         {% csrf_token %}

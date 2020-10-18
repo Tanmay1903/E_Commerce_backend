@@ -106,11 +106,11 @@ class UserLogin(GenericAPIView):
                         return Response(user_data, status=status.HTTP_200_OK)
                     else:
                         return Response(
-                            "To Login,please click on the verification link sent to you on your registered email", status=status.HTTP_202_ACCEPTED)
+                            {"message":"To Login,please click on the verification link sent to you on your registered email"}, status=status.HTTP_202_ACCEPTED)
                 else:
-                    return Response("Invalid login details", status = status.HTTP_401_UNAUTHORIZED)
+                    return Response({"message":"Invalid login details"}, status = status.HTTP_401_UNAUTHORIZED)
         except ValidationError as e:
-            return Response(str(e), status=status.HTTP_400_BAD_REQUEST)
+            return Response({"message":str(e)}, status=status.HTTP_400_BAD_REQUEST)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
@@ -128,8 +128,6 @@ class UserLogout(GenericAPIView):
         response.delete_cookie('sessionid')
         response.delete_cookie('csrftoken')
         return response
-
-
 
 class Userlist(GenericAPIView):
     '''

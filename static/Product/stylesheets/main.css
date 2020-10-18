@@ -1,6 +1,6 @@
 
     body {
-        
+
         font-family: 'Ubuntu', sans-serif;
     }
 
@@ -15,10 +15,10 @@
 
     .sign {
         padding-top: 40px;
-        color: #8C55AA;
+        color: #FF0000;
         font-family: 'Ubuntu', sans-serif;
         font-weight: bold;
-        font-size: 23px;
+        font-size: 25px;
     }
 
     .un {
@@ -75,7 +75,7 @@
       cursor: pointer;
         border-radius: 5em;
         color: #fff;
-        background: linear-gradient(to right, #9C27B0, #E040FB);
+        background: linear-gradient(to right, #FF0000, #FFCCBB);
         border: 0;
         padding-left: 40px;
         padding-right: 40px;
@@ -83,7 +83,7 @@
         padding-top: 10px;
         font-family: 'Ubuntu', sans-serif;
         margin-left: 35%;
-        font-size: 13px;
+        font-size: 15px;
         box-shadow: 0 0 20px 1px rgba(0, 0, 0, 0.04);
     }
 

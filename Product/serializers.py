@@ -49,5 +49,4 @@ def create(data,FP,BP):
     prod_obj.Shipping_details.append(s)
     prod_obj.Date_added = str(datetime.now())
     prod_obj.Date_modified = None
-    prod_obj.save()
-    return data
+    return prod_obj

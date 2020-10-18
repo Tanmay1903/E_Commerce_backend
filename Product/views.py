@@ -1,3 +1,4 @@
+from django.contrib import messages
 from django.shortcuts import render
 from .serializers import ProductsSerializer,create
 from .models import Products,Manufact_details,Ship_details
@@ -8,11 +9,13 @@ import uuid
 from django.core.files.storage import default_storage
 from django.core.files.images import ImageFile
 from django.contrib.auth.decorators import login_required
-from .forms import UpdateForm
 from django.http import HttpResponseRedirect
 from Users.auth import IsAuthenticated
 from django.contrib.auth import login,logout
 from django.shortcuts import redirect
+from django_mongoengine.mongo_auth.managers import get_user_document
+
+User = get_user_document()
 
 class Add_Products(GenericAPIView):
     serializer_class = ProductsSerializer
@@ -22,6 +25,7 @@ class Add_Products(GenericAPIView):
 
     def post(self,request):
         data = request.data
+        id = uuid.uuid1()
         serializer = ProductsSerializer(data=data)
         if serializer.is_valid():
             unique_filename = str(uuid.uuid4())
@@ -39,7 +43,11 @@ class Add_Products(GenericAPIView):
                 filename2 = unique_filename + '.' + ext
                 path2 = 'front_pic/' + filename2
                 default_storage.save(path2, ImageFile(newdoc2))
-            create(data=data,FP = filename2, BP = filename1)
+            prod_obj = create(data=data,FP = filename2, BP = filename1)
+            prod_obj.Productid = id.time_low
+            prod_obj.OverallRating = 4.0
+            prod_obj.count = 0
+            prod_obj.save()
             return Response({"message":"Product uploaded successfully"},status=status.HTTP_201_CREATED)
         return Response(serializer.errors,status=status.HTTP_400_BAD_REQUEST)
 
@@ -87,8 +95,12 @@ class UpdateProduct(GenericAPIView):
                 data.FrontPic = data.FrontPic.rsplit('.', 1)[0].lower() + '.' + ext
                 default_storage.save(path2, ImageFile(newdoc2))
                 data.save()
-            create(data=data1, FP = data.FrontPic, BP = data.BackPic)
+            prod_obj = create(data=data1, FP = data.FrontPic, BP = data.BackPic)
+            prod_obj.Productid = data['Productid']
+            prod_obj.OverallRating = data['OverallRating']
+            prod_obj.count = data['count']
             data.delete()
+            prod_obj.save()
             return Response({"message":"Product updated successfully"},status=status.HTTP_201_CREATED)
         context = {'data': data.json()}
         return render(request, 'Product/update_products.html', context)
@@ -107,6 +119,32 @@ def user_logout(request):
     logout(request)
 
     return render(request,'Product/index.html')
+
+def user_login(request):
+    '''
+    A simple login function for the staff memebers(crm users)
+    to login themselves.
+    '''
+    if request.method=="POST":
+        email = request.POST.get('email').lower()
+        password = request.POST.get('password')
+        try:
+            user = User.objects.get(email=email)
+            if user.check_password(password):
+                if user.is_active and user.is_staff:
+                    user.backend = 'django_mongoengine.mongo_auth.backends.MongoEngineBackend'
+                    login(request, user,backend=user.backend)
+                    return redirect('../security/crm')
+            else:
+                messages.error(request,"Invalid Email or Password!")
+                return render(request,'Product/index.html')
+        except User.DoesNotExist:
+            messages.warning(request,"Invalid Credentials!")
+            return render(request,'Product/index.html')
+
+    else:
+
+        return render(request, 'Product/index.html')
 
 def search(request):
     search_query = request.GET.get('search_box')
