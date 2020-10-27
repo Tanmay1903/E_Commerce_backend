@@ -46,7 +46,7 @@ def AvgRating(data1):
             A function which calculates Average ratings
             and return ID to particular user's review.
     '''
-    data=Products.objects.get(id=data1['Productid'])
+    data=Products.objects.get(Productid=data1['Productid'])
     if data.count==None:
         data.count=int()
     if data.OverallRating==None:
@@ -80,12 +80,12 @@ def update(request,data):
     groups=Rating.objects.all()
     for group in groups:
         if UserEmail==group['UserEmail'] and Productid==group["Productid"]:
-            ID=group['id']
+            ID=group['Productid']
             return ID
 
 """
 A function to update review given by customer.
-Customer can make changes to his/her already given Reviews about a store through this function.
+Customer can make changes to his/her already given Reviews about a product through this function.
 """
 class Update_Review(GenericAPIView):
     permission_classes=(IsAuthenticated,)
