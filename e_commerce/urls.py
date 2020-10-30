@@ -8,6 +8,7 @@ urlpatterns = [
     path('admin/', mongo_admin.site.urls),
     path('',include('Users.urls')),
     path('',include('Product.urls')),
+    path('',include('Review.urls')),
 ]
 if settings.DEBUG:
     urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
