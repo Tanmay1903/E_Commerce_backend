@@ -1,10 +1,10 @@
 from django.contrib import messages
 from django.shortcuts import render
-from .serializers import ProductsSerializer,create
+from .serializers import ProductsSerializer,create, ProductlistSerializer
 from .models import Products,Manufact_details,Ship_details
 from rest_framework.response import Response
 from rest_framework import status
-from rest_framework_mongoengine.generics import CreateAPIView,GenericAPIView
+from rest_framework_mongoengine.generics import GenericAPIView
 import uuid
 from django.core.files.storage import default_storage
 from django.core.files.images import ImageFile
@@ -110,6 +110,16 @@ def update_product(request,a):
     context = {'data': data.json()}
     return render(request, 'Product/update_products.html', context)
 
+class product_list(GenericAPIView):
+
+    def get(self, request):
+        prod = Products.objects.all()
+        serializer = ProductlistSerializer(prod,many=True)
+        return Response(serializer.data,status=status.HTTP_200_OK)
+
+    def get_queryset(self):
+        return Products.objects.all()
+
 permission_classes = (IsAuthenticated)
 def user_logout(request):
     '''
@@ -172,6 +182,8 @@ def search(request):
             return HttpResponse('No Product Found.')
     except:
         return HttpResponse("No Product Found.")
+
+
 
 @login_required()
 def delete_product(request, a):

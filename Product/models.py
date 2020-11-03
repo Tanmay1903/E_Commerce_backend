@@ -30,7 +30,7 @@ class Ship_details(EmbeddedDocument):
         return s_dict
 
 class Products(DynamicDocument):
-    Productid = fields.IntField(unique = True,blank = True)
+    Productid = fields.IntField(unique = True)
     product_name = fields.StringField(max_length=255)
     Description  = fields.StringField(max_length=600)
     manufacturing_details = fields.ListField(EmbeddedDocumentField(Manufact_details),blank=True)

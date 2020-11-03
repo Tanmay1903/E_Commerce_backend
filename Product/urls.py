@@ -14,4 +14,5 @@ urlpatterns = [
     path('delete_product/<str:a>',views.delete_product,name='delete_product'),
     path('delete_fpic/',views.DeleteFrontPic.as_view(),name='delete_fpic'),
     path('delete_bpic/',views.DeleteBackPic.as_view(),name='delete_bpic'),
+    path('product_list/',views.product_list.as_view(),name='product_list'),
 ]

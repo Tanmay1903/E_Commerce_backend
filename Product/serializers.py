@@ -50,3 +50,8 @@ def create(data,FP,BP):
     prod_obj.Date_added = str(datetime.now())
     prod_obj.Date_modified = None
     return prod_obj
+
+class ProductlistSerializer(serializers.DynamicDocumentSerializer):
+    class Meta:
+        model = Products
+        fields = ("Productid","product_name", "Description","manufacturing_details","Shipping_details", "Price", "Category","FrontPic","BackPic", "Discount", "Brand", "Model","OverallRating")
