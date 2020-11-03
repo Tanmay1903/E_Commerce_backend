@@ -138,6 +138,6 @@ STATICFILES_DIRS = [
     os.path.join(BASE_DIR, "static"),
     '/root/E_Commerce_backend/static/',
 ]
-STATIC_ROOT = STATIC_DIR
+#STATIC_ROOT = STATIC_DIR
 MEDIA_ROOT=MEDIA_DIR
 MEDIA_URL='/media/'
