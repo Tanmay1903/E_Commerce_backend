@@ -28,6 +28,7 @@ INSTALLED_APPS = [
     'django_mongoengine.mongo_auth',
     'django_mongoengine.mongo_admin',
     'django_mongoengine',
+    'corsheaders',
     'Users',
     'Product',
     'Review',
@@ -38,6 +39,7 @@ AUTH_USER_MODEL = ('mongo_auth.MongoUser')
 MONGOENGINE_USER_DOCUMENT = 'Users.models.CustomUser'
 
 MIDDLEWARE = [
+    'corsheaders.middleware.CorsMiddleware',
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
