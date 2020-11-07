@@ -1,6 +1,6 @@
 from django.contrib import messages
 from django.shortcuts import render
-from .serializers import ProductsSerializer,create, ProductlistSerializer
+from .serializers import ProductsSerializer,create, ProductlistSerializer, SearchSerializer
 from .models import Products,Manufact_details,Ship_details
 from rest_framework.response import Response
 from rest_framework import status
@@ -155,6 +155,27 @@ def user_login(request):
     else:
 
         return render(request, 'Product/index.html')
+
+class Search_product(GenericAPIView):
+    serializer_class = SearchSerializer
+    def get_queryset(self):
+        return Products.objects.all()
+
+    def post(self,request):
+        data = request.data
+        Category = data.get("Category")
+        content = []
+        serializer = SearchSerializer(data = data)
+        if serializer.is_valid():
+            groups = Products.objects.all()
+            for group in groups:
+                if group['Category'] == Category:
+                    content.append(group.json())
+            if content:
+                return Response(content,status = status.HTTP_200_OK)
+            else:
+                return Response("No Products in this Category Found", status=status.HTTP_204_NO_CONTENT)
+        return Response(serializer.errors,status = status.HTTP_400_BAD_REQUEST)
 
 def search(request):
     search_query = request.GET.get('search_box')

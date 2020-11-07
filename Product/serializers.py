@@ -55,3 +55,8 @@ class ProductlistSerializer(serializers.DynamicDocumentSerializer):
     class Meta:
         model = Products
         fields = ("Productid","product_name", "Description","manufacturing_details","Shipping_details", "Price", "Category","FrontPic","BackPic", "Discount", "Brand", "Model","OverallRating")
+
+class SearchSerializer(serializers.DynamicDocumentSerializer):
+    class Meta:
+        model = Products
+        fields = ("Category",)
