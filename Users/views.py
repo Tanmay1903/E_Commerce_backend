@@ -1,12 +1,21 @@
+import re
 from django.shortcuts import render,redirect
 from rest_framework_mongoengine.generics import CreateAPIView, GenericAPIView, ValidationError
 from rest_framework.response import Response
 from rest_framework.permissions import AllowAny
+from django.http import HttpResponse
 from rest_framework import status
-from .serializers import UserLoginSerializer, UserCreateSerializer, UserLogoutSerializer, UserSerializer
+from .serializers import UserLoginSerializer, UserCreateSerializer, UserLogoutSerializer, UserSerializer, \
+ResendVerificationSerializer, EmailUpdateSerializer, PasswordSerializer, Passwordupdateserializer, FirstNameSerializer,LastNameSerializer
 from django.contrib.auth import login, logout
 from .auth import IsAuthenticated
 from django_mongoengine.mongo_auth.managers import get_user_document
+from .tokens import account_activation_token
+from django.contrib.sites.shortcuts import get_current_site
+from django.core.mail import EmailMessage, EmailMultiAlternatives
+from django.template.loader import render_to_string
+from django.utils.encoding import force_bytes, force_text
+from django.utils.http import urlsafe_base64_encode, urlsafe_base64_decode
 
 User = get_user_document()
 
@@ -42,13 +51,13 @@ class UserRegister(CreateAPIView):
         try:
             if serializer.is_valid():
                 serializer.save()
-                '''
+
                 user = User.objects.get(username=username)
                 user.is_active = False
                 user.save()
                 current_site = get_current_site(request)
-                mail_subject = 'Activate your 9eye.in account.'
-                message = render_to_string('stores/account_activation_email_api.html', {
+                mail_subject = 'Activate your Sparkcart account.'
+                message = render_to_string('Product/account_activation_email_api.html', {
                     'user': user,
                     'domain': current_site.domain,
                     'uid': urlsafe_base64_encode(force_bytes(user.pk)),
@@ -62,13 +71,26 @@ class UserRegister(CreateAPIView):
                 email.attach_alternative(message, 'text/html')
                 email.send()
                 return Response({"message":"Please confirm your email address to complete the registration"},status=status.HTTP_200_OK)
-                '''
-                return Response(serializer.validate_email(data),status=status.HTTP_201_CREATED)
             else:
                 return Response({"message":"email does not exist"}, status=status.HTTP_409_CONFLICT)
         except ValidationError:
             return Response({"message":"This Email is already registered.Please login to your account."}, status=status.HTTP_409_CONFLICT)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+def act(request, uidb64, token):
+    try:
+        uid = force_text(urlsafe_base64_decode(uidb64))
+        user = User.objects.get(id=uid)
+    except(TypeError, ValueError, OverflowError, User.DoesNotExist):
+        user = None
+    if user is not None and account_activation_token.check_token(user, token):
+        user.is_active = True
+        user.save()
+        user.backend = 'django_mongoengine.mongo_auth.backends.MongoEngineBackend'
+        login(request, user , backend=user.backend)
+        return HttpResponse('Thank you for your email confirmation. Now you can login your account.')
+    else:
+        return HttpResponse('Activation link is invalid!')
 
 class UserLogin(GenericAPIView):
     '''
@@ -141,3 +163,201 @@ class Userlist(GenericAPIView):
 
     def get_queryset(self):
         return User.objects.all()
+
+class ResendVerificationAPI(CreateAPIView):
+    '''
+    an api for the users to resend verification link
+    '''
+    serializer_class = ResendVerificationSerializer
+
+    def post(self, request):
+
+        data = request.data
+        email = request.data.get('email')
+        try:
+            user = User.objects.get(email=email)
+        except User.DoesNotExist:
+            return Response({"message":"User does not exist!"}, status=status.HTTP_400_BAD_REQUEST)
+        try:
+            instance = User.objects.get(email=email)
+        except User.DoesNotExist:
+            instance = None
+        serializer = ResendVerificationSerializer(instance, data=data)
+        try:
+            if serializer.is_valid():
+                if not user.is_active:
+                    current_site = get_current_site(request)
+                    subject = 'Activate Your Sparkcart Account'
+                    message = render_to_string('Product/account_activation_email_api.html', {
+                        'user': user,
+                        'domain': current_site.domain,
+                        'uid': urlsafe_base64_encode(force_bytes(user.pk)),
+                        'token': account_activation_token.make_token(user),
+                    })
+                    to_email = request.data.get('email')
+                    email = EmailMultiAlternatives(
+                        subject, message, to=[to_email]
+                    )
+                    email.attach_alternative(message, 'text/html')
+                    email.send()
+                    return Response({"message":"Account activation link sent to your email"}, status=status.HTTP_200_OK)
+                else:
+                    return Response({"message":"User is already Verified"}, status=status.HTTP_400_BAD_REQUEST)
+        except ValidationError as e:
+            return Response(str(e), status=status.HTTP_400_BAD_REQUEST)
+
+class EmailupdateAPI(CreateAPIView):
+    '''
+    an api for the users to update their email address.
+    '''
+    permission_classes = (IsAuthenticated,)
+    serializer_class = EmailUpdateSerializer
+
+    def post(self, request):
+
+        data = request.data
+        email = request.user.email
+        new_email = request.data.get('new_email')
+        try:
+            user = User.objects.get(email=email)
+        except User.DoesNotExist:
+            return Response({"message":"User does not exist!"}, status=status.HTTP_400_BAD_REQUEST)
+        try:
+            instance = User.objects.get(email=email)
+        except User.DoesNotExist:
+            instance = None
+        serializer = EmailUpdateSerializer(instance, data=data)
+        try:
+            if serializer.is_valid():
+                user.email = new_email
+                user.is_active = False
+                user.save()
+                current_site = get_current_site(request)
+                subject = 'Activate Your Sparkcart Account'
+                message = render_to_string('Product/account_activation_email_api.html', {
+                    'user': user,
+                    'domain': current_site.domain,
+                    'uid': urlsafe_base64_encode(force_bytes(user.pk)),
+                    'token': account_activation_token.make_token(user),
+                })
+                to_email = request.user.email
+                email = EmailMultiAlternatives(
+                    subject, message, to=[to_email]
+                )
+                email.attach_alternative(message, 'text/html')
+                email.send()
+                return Response({"message":"Email updated please verify to confirm account"}, status=status.HTTP_200_OK)
+
+        except ValidationError as e:
+            return Response(str(e), status=status.HTTP_400_BAD_REQUEST)
+
+class PasswordResetView(GenericAPIView):
+    """
+    Calls Django Auth PasswordResetForm save method.
+
+    Accepts the following POST parameters: email
+    Returns the success/fail message.
+    """
+    serializer_class = PasswordSerializer
+    permission_classes = (AllowAny,)
+
+    def post(self, request, *args, **kwargs):
+        data = request.data
+        email = request.data.get('email')
+        email = email.lower()
+        try:
+            instance = User.objects.get(email=email)
+        except User.DoesNotExist:
+            instance = None
+        serializer = PasswordSerializer(instance, data=data)
+        #try:
+        if serializer.is_valid():
+            user = User.objects.get(email=email)
+            current_site = get_current_site(request)
+            mail_subject = 'Change your Sparkcart account password.'
+            message = render_to_string('Product/password_change_api.html', {
+                'user': user,
+                'domain': current_site.domain,
+                'uid': urlsafe_base64_encode(force_bytes(user.pk)),
+                'token': account_activation_token.make_token(user),
+            })
+            message = re.sub('/api/', '/', message)
+            to_email = request.data.get('email')
+            email = EmailMultiAlternatives(
+                mail_subject, message, to=[to_email]
+            )
+            email.attach_alternative(message, 'text/html')
+            email.send()
+            return Response({"message": "Password reset e-mail has been sent."},
+                            status=status.HTTP_200_OK)
+        else:
+            return Response({"message": "email does not exist"}, status=status.HTTP_409_CONFLICT)
+        #except :
+        #    return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+class Passwordupdateview(GenericAPIView):
+    """
+    An API to update Password of already existed user
+    """
+
+    serializer_class = Passwordupdateserializer
+
+    def post(self,request,uidb64,token):
+        data = request.data
+        password = request.data.get('password')
+        try:
+            uid = force_text(urlsafe_base64_decode(uidb64))
+            user = User.objects.get(id=uid)
+        except(TypeError, ValueError, OverflowError, User.DoesNotExist):
+            user = None
+        try:
+            instance = User.objects.get(email=user.email)
+        except User.DoesNotExist:
+            instance = None
+        serializer = Passwordupdateserializer(instance, data=data)
+        try:
+            if serializer.is_valid():
+                if user is not None and account_activation_token.check_token(user, token):
+                    if user.username == password:
+                        return Response({"message":"Username and new password should be different"}, status=status.HTTP_400_BAD_REQUEST)
+                    else:
+                        user.set_password(password)
+                        user.save()
+                        return Response({"message":"successfully password change"}, status=status.HTTP_200_OK)
+                else:
+                    return HttpResponse('Activation link is invalid!')
+        except ValidationError:
+            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+class update_firstname(GenericAPIView):
+    serializer_class = FirstNameSerializer
+    permission_classes = (IsAuthenticated,)
+
+    def get_queryset(self):
+        return User.objects.all()
+
+    def post(self,request):
+        data = request.data
+        Email = request.user.email
+        serializer = FirstNameSerializer(data=data)
+        if serializer.is_valid():
+            User.objects.filter(email=Email).update(first_name=data['first_name'])
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
+        return Response(serializer.errors,status=status.HTTP_400_BAD_REQUEST)
+
+class update_lastname(GenericAPIView):
+    serializer_class = LastNameSerializer
+    permission_classes = (IsAuthenticated,)
+
+    def get_queryset(self):
+        return User.objects.all()
+
+    def post(self,request):
+        data = request.data
+        Email = request.user.email
+        serializer = LastNameSerializer(data=data)
+        if serializer.is_valid():
+            User.objects.filter(email=Email).update(last_name=data['last_name'])
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
+        return Response(serializer.errors,status=status.HTTP_400_BAD_REQUEST)

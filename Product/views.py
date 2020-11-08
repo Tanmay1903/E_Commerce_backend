@@ -9,7 +9,7 @@ import uuid
 from django.core.files.storage import default_storage
 from django.core.files.images import ImageFile
 from django.contrib.auth.decorators import login_required
-from django.http import HttpResponseRedirect
+from django.http import HttpResponse
 from Users.auth import IsAuthenticated
 from django.contrib.auth import login,logout
 from django.shortcuts import redirect
@@ -116,6 +116,29 @@ class product_list(GenericAPIView):
         prod = Products.objects.all()
         serializer = ProductlistSerializer(prod,many=True)
         return Response(serializer.data,status=status.HTTP_200_OK)
+
+    def get_queryset(self):
+        return Products.objects.all()
+
+'''
+def get_product(request,a):
+    if request.method == 'POST':
+        prod = Products.object.get(Productid = int(a))
+        print(prod)
+        if prod:
+            return HttpResponse(prod.json())
+        else:
+            return HttpResponse("No Product with this productid Found")
+
+'''
+class get_product(GenericAPIView):
+
+    def get(self,request,a):
+        prod = Products.objects.get(Productid = int(a))
+        if prod:
+            return Response(prod.json(),status=status.HTTP_200_OK)
+        else:
+            return Response("No Product with this productid Found",status=status.HTTP_400_BAD_REQUEST)
 
     def get_queryset(self):
         return Products.objects.all()

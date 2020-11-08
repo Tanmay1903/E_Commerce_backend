@@ -1,6 +1,7 @@
 from rest_framework_mongoengine import serializers,generics
 from django_mongoengine.mongo_auth.managers import get_user_document
 from rest_framework_mongoengine.fields import ObjectIdField
+from rest_framework import serializers as ser
 
 User = get_user_document()
 
@@ -69,9 +70,42 @@ class UserLogoutSerializer(serializers.DocumentSerializer):
         fields = ()
 
 
-# harshita
 class UserSerializer(serializers.DocumentSerializer):
     userid = ObjectIdField(source = 'id')
     class Meta():
         model=User
         fields=("userid","first_name","last_name","address","phone_no","email","username")
+
+class ResendVerificationSerializer(serializers.DocumentSerializer):
+    class Meta():
+        model = User
+        fields = ("email",)
+
+
+class EmailUpdateSerializer(serializers.DocumentSerializer):
+    new_email = ser.EmailField()
+
+
+    class Meta():
+        model = User
+        fields = ("new_email",)
+
+class PasswordSerializer(serializers.DocumentSerializer):
+    class Meta():
+        model = User
+        fields = ("email",)
+
+class Passwordupdateserializer(serializers.DocumentSerializer):
+    class Meta():
+        model = User
+        fields = ("password",)
+
+class FirstNameSerializer(serializers.DocumentSerializer):
+    class Meta:
+        model = User
+        fields =("first_name",)
+
+class LastNameSerializer(serializers.DocumentSerializer):
+    class Meta:
+        model = User
+        fields =("last_name",)
