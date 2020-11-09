@@ -1,7 +1,7 @@
 from rest_framework_mongoengine import serializers,generics
 from .models import Products,Manufact_details,Ship_details
 from datetime import datetime
-import json
+from rest_framework import serializers as ser
 
 class ManufacSerializer(serializers.EmbeddedDocumentSerializer):
     class Meta:
@@ -60,3 +60,9 @@ class SearchSerializer(serializers.DynamicDocumentSerializer):
     class Meta:
         model = Products
         fields = ("Category",)
+
+class SearchProductSerializer(serializers.DocumentSerializer):
+    Search = ser.CharField()
+    class Meta():
+        model = Products
+        fields = ('Search',)

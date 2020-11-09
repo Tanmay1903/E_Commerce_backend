@@ -1,10 +1,10 @@
 from django.contrib import messages
 from django.shortcuts import render
-from .serializers import ProductsSerializer,create, ProductlistSerializer, SearchSerializer
+from .serializers import ProductsSerializer,create, ProductlistSerializer, SearchSerializer, SearchProductSerializer
 from .models import Products,Manufact_details,Ship_details
 from rest_framework.response import Response
 from rest_framework import status
-from rest_framework_mongoengine.generics import GenericAPIView
+from rest_framework_mongoengine.generics import GenericAPIView,ValidationError
 import uuid
 from django.core.files.storage import default_storage
 from django.core.files.images import ImageFile
@@ -120,17 +120,7 @@ class product_list(GenericAPIView):
     def get_queryset(self):
         return Products.objects.all()
 
-'''
-def get_product(request,a):
-    if request.method == 'POST':
-        prod = Products.object.get(Productid = int(a))
-        print(prod)
-        if prod:
-            return HttpResponse(prod.json())
-        else:
-            return HttpResponse("No Product with this productid Found")
 
-'''
 class get_product(GenericAPIView):
 
     def get(self,request,a):
@@ -227,6 +217,36 @@ def search(request):
     except:
         return HttpResponse("No Product Found.")
 
+class searchproduct(GenericAPIView):
+    serializer_class = SearchProductSerializer
+
+    def get_queryset(self):
+        return Products.objects.all()
+
+    def post(self, request):
+        data = request.data
+        search = request.data.get('Search')
+        import re
+        try:
+            loc = {"product_name": re.compile(search, re.IGNORECASE)}
+            loc1 = {"Category": re.compile(search, re.IGNORECASE)}
+            groups = Products._get_collection()
+            y = groups.find(loc)
+            z = groups.find(loc1)
+            y = list(y)
+            y.extend(list(z))
+            res = []
+            for i in y:
+                del(i['_id'])
+                if i not in res:
+                    res.append(i)
+            if res:
+                return Response(res, status=status.HTTP_200_OK)
+            else:
+                return Response({"message": "No Products Found"}, status=status.HTTP_204_NO_CONTENT)
+
+        except ValidationError as e:
+            return Response("Something Went Wrong", status=status.HTTP_400_BAD_REQUEST)
 
 
 @login_required()
