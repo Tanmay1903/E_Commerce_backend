@@ -225,28 +225,32 @@ class searchproduct(GenericAPIView):
 
     def post(self, request):
         data = request.data
+        print(data)
         search = request.data.get('Search')
         import re
-        try:
-            loc = {"product_name": re.compile(search, re.IGNORECASE)}
-            loc1 = {"Category": re.compile(search, re.IGNORECASE)}
-            groups = Products._get_collection()
-            y = groups.find(loc)
-            z = groups.find(loc1)
-            y = list(y)
-            y.extend(list(z))
-            res = []
-            for i in y:
-                del(i['_id'])
-                if i not in res:
-                    res.append(i)
-            if res:
-                return Response(res, status=status.HTTP_200_OK)
-            else:
-                return Response({"message": "No Products Found"}, status=status.HTTP_204_NO_CONTENT)
-
-        except ValidationError as e:
-            return Response("Something Went Wrong", status=status.HTTP_400_BAD_REQUEST)
+        serializer = SearchProductSerializer(data=data)
+        if serializer.is_valid():
+            try:
+                loc = {"product_name": re.compile(search, re.IGNORECASE)}
+                loc1 = {"Category": re.compile(search, re.IGNORECASE)}
+                groups = Products._get_collection()
+                y = groups.find(loc)
+                z = groups.find(loc1)
+                y = list(y)
+                y.extend(list(z))
+                res = []
+                for i in y:
+                    del (i['_id'])
+                    if i not in res:
+                        res.append(i)
+                if res:
+                    return Response(res, status=status.HTTP_200_OK)
+                else:
+                    return Response({"message": "No Products Found"}, status=status.HTTP_204_NO_CONTENT)
+            except ValidationError as e:
+                return Response("Something Went Wrong", status=status.HTTP_400_BAD_REQUEST)
+        else:
+            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
 @login_required()

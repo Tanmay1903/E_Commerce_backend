@@ -10,7 +10,20 @@ class OrderDetails(DynamicDocument):
     Price = fields.FloatField()
 
 class Order(DynamicDocument):
-    Userid = fields.StringField(max_length=255)
-    ProductID = fields.IntField(max_length=255)
+    Useremail = fields.StringField(max_length=255)
+    Productid = fields.IntField()
     Tracking_Number = fields.IntField(unique = True)
     status = fields.StringField()
+
+class Cart(DynamicDocument):
+    useremail = fields.StringField(max_length=255)
+    Productid = fields.IntField()
+    Quantity = fields.IntField()
+
+    def json(self):
+        form_dict = {
+            "useremail" : self.useremail,
+            "Productid" : self.Productid,
+            "Quantity" : self.Quantity
+        }
+        return form_dict

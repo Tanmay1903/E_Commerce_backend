@@ -10,6 +10,7 @@ urlpatterns = [
     path('',include('Users.urls')),
     path('',include('Product.urls')),
     path('',include('Review.urls')),
+    path('',include('Order.urls')),
     url(r'^activate_user/(?P<uidb64>[0-9A-Za-z_\-]+)/(?P<token>[0-9A-Za-z]{1,13}-[0-9A-Za-z]{1,20})/$',
         user_views.act, name='activate_user'),
     #url(r'^reset_password_confirm/(?P<uidb64>[0-9A-Za-z]+)-(?P<token>.+)/$', views.password_reset_confirm, name='reset_password_confirm'),
