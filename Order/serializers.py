@@ -1,5 +1,5 @@
 from rest_framework_mongoengine import serializers
-from .models import OrderDetails,Order,Cart
+from .models import OrderDetails,Cart
 from datetime import datetime
 
 class AddcartSerializer(serializers.DynamicDocumentSerializer):
@@ -21,3 +21,12 @@ class DeleteSerializer(serializers.DynamicDocumentSerializer):
     class Meta:
         model = Cart
         fields = ("Productid",)
+
+class PlaceOrderSerializer(serializers.DynamicDocumentSerializer):
+    class Meta:
+        model = OrderDetails
+        fields = ("Productid","Order_date","Total_Price","Shipping_Address","Payment_type","Quantity")
+
+    def create(self,request,data):
+        useremail = request.user.email
+        

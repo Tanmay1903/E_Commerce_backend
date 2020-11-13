@@ -1,6 +1,6 @@
 from django.shortcuts import render
-from .serializers import AddcartSerializer,DeleteSerializer
-from .models import Cart, Order,OrderDetails
+from .serializers import AddcartSerializer,DeleteSerializer,PlaceOrderSerializer
+from .models import Cart,OrderDetails
 from Product.models import Products
 from rest_framework.response import Response
 from rest_framework import status
@@ -88,3 +88,15 @@ class Remove_from_cart(GenericAPIView):
                 return Response({"message":"No product with this product id found."},status=status.HTTP_404_NOT_FOUND)
         else:
             return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+class PlaceOrder(GenericAPIView):
+    serializer_class = PlaceOrderSerializer
+
+    def get_queryset(self):
+        return OrderDetails.objects.all()
+
+    def post(self,request):
+        data = request.data
+        serializer = PlaceOrderSerializer(data = data)
+        if serializer.is_valid():
+            serializer.create(request,data)
