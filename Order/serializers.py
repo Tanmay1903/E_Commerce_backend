@@ -22,6 +22,7 @@ class DeleteSerializer(serializers.DynamicDocumentSerializer):
         model = Cart
         fields = ("Productid",)
 
+'''
 class PlaceOrderSerializer(serializers.DynamicDocumentSerializer):
     class Meta:
         model = OrderDetails
@@ -29,4 +30,4 @@ class PlaceOrderSerializer(serializers.DynamicDocumentSerializer):
 
     def create(self,request,data):
         useremail = request.user.email
-        
+'''
