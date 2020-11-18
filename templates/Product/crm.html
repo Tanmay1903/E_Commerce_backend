@@ -45,7 +45,7 @@
                     <td>{{ value.Quantity }}</td>
                     <td>{{ value.Inventory_ID }}</td>
                     <td>{{ value.Price }}</td>
-                    <td><img height="100" width="100" src="/media/front_pic/{{ value.FrontPic}}"
+                    <td><img height="100" width="100" src="/spkct/media/front_pic/{{ value.FrontPic}}"
                              onerror="this.onerror=null;this.src='{% static '/Product/Images/logo.png' %}';"
                              alt="">
                         {% if user.is_superuser %}
@@ -54,7 +54,7 @@
                         {% endif %}
                         </td>
 
-                    <td><img height="100" width="100" src= "/media/back_pic/{{ value.BackPic }}" onerror="this.onerror=null;this.src='{% static '/Product/Images/logo.png' %}';" alt="" >
+                    <td><img height="100" width="100" src= "/spkct/media/back_pic/{{ value.BackPic }}" onerror="this.onerror=null;this.src='{% static '/Product/Images/logo.png' %}';" alt="" >
                         {% if user.is_superuser %}
                         <input id='{{value.id}}' type='button' class='btn btn-danger'   onclick='ConfirmBackDelete(this.id)' value='Delete'>
                     {% endif %}
