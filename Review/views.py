@@ -177,7 +177,7 @@ class Get_Review(GenericAPIView):
                     x=serobj(group1)
                     content.append(x)
                 if content:
-                    return Response(content,status=status.HTTP_201_CREATED)
+                    return Response(content,status=status.HTTP_200_OK)
                 else:
                     return Response({"message":"No Review With this Email Found"},status=status.HTTP_204_NO_CONTENT)
             return Response(serializer.errors,status=status.HTTP_400_BAD_REQUEST)
