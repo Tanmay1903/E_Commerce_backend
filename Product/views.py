@@ -321,7 +321,7 @@ def return_driver():
     chrome_options.add_argument("--incognito")
     chrome_options.add_argument("--disable-plugins-discovery")
     chrome_options.add_argument("--start-maximized")
-    driver = webdriver.Chrome()
+    driver = webdriver.Chrome('root/E_Commerce_backend')
 
     return driver
 
