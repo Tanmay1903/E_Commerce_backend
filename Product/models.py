@@ -78,3 +78,7 @@ class Products(DynamicDocument):
                                 },
         }
         return form_dict
+
+class Analysis(DynamicDocument):
+    Productid = fields.IntField(unique = True)
+    date_time = fields.DateTimeField()
