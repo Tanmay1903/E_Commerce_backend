@@ -35,6 +35,7 @@ class Add_to_cart(GenericAPIView):
 
 def cartjson(prod,q):
     form_dict = {
+        "Productid" : prod["Productid"],
         "product_name": prod["product_name"],
         "Description": prod["Description"],
         "Quantity": q,
