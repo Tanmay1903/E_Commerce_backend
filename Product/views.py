@@ -309,11 +309,11 @@ class DeleteBackPic(GenericAPIView):
         return Response({'message':'Invalid ID'},status=status.HTTP_400_BAD_REQUEST)
 
 def return_driver():
-    #from pyvirtualdisplay import Display
+    from pyvirtualdisplay import Display
     from selenium import webdriver
     from fake_useragent import UserAgent
-    #display = Display(visible=0, size=(800, 600))
-    #display.start()
+    display = Display(visible=0, size=(800, 600))
+    display.start()
 
     chrome_options = webdriver.ChromeOptions()
     ua = UserAgent()
