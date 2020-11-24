@@ -15,6 +15,12 @@ from django.contrib.auth import login,logout
 from django.shortcuts import redirect
 from django_mongoengine.mongo_auth.managers import get_user_document
 from datetime import datetime, timezone
+import pandas as pd
+import numpy as np
+import time
+import Product.clean_review as ct
+from sklearn.feature_extraction.text import CountVectorizer
+from sklearn.naive_bayes import MultinomialNB
 
 User = get_user_document()
 
@@ -366,12 +372,6 @@ class Sentiment_Analysis_Amazon(GenericAPIView):
             return Response(dict,status=status.HTTP_200_OK)
         else:
             driver = return_driver()
-            import pandas as pd
-            import numpy as np
-            import time
-            import Product.clean_review as ct
-            from sklearn.feature_extraction.text import CountVectorizer
-            from sklearn.naive_bayes import MultinomialNB
 
             df = pd.DataFrame([], columns=list(['Titles']))
             dfx = pd.read_csv("amazonReviews.csv")  # to remove 'nan'
@@ -399,9 +399,9 @@ class Sentiment_Analysis_Amazon(GenericAPIView):
             mnb.fit(x_vec, y)  # Training
 
             driver.get("https://www.amazon.in/")
-            time.sleep(5)
+            #time.sleep(5)
             search = driver.find_element_by_xpath('//*[@id="twotabsearchtextbox"]').send_keys(name)
-            time.sleep(4)
+            #time.sleep(4)
             ent = driver.find_element_by_xpath('//*[@id="nav-search-submit-text"]/input').click()
             time.sleep(5)
             try:
@@ -409,9 +409,9 @@ class Sentiment_Analysis_Amazon(GenericAPIView):
                     ent = driver.find_element_by_xpath('//*[@class="a-size-medium a-color-base a-text-normal"]').click()
                 except:
                     ent = driver.find_element_by_xpath('//*[@class="a-size-base-plus a-color-base a-text-normal"]').click()
-                time.sleep(5)
-                driver.switch_to.window(driver.window_handles[-1])
                 time.sleep(2)
+                driver.switch_to.window(driver.window_handles[-1])
+                #time.sleep(2)
                 amaz_name = driver.find_element_by_xpath('//*[@id="productTitle"]').text
                 amaz_price = driver.find_element_by_xpath('//*[@class="a-span12"]/span[1]').text
                 ent = driver.find_element_by_xpath('//*[@id="reviews-medley-footer"]/div[2]/a').click()
@@ -425,7 +425,7 @@ class Sentiment_Analysis_Amazon(GenericAPIView):
                         df = pd.concat([df, df1])
                     try:
                         ent = driver.find_element_by_xpath('//*[@id="cm_cr-pagination_bar"]/ul/li[2]/a').click()
-                        time.sleep(5)
+                        #time.sleep(5)
                     except:
                         break
             except:
@@ -467,13 +467,6 @@ class Sentiment_Analysis_Flipkart(GenericAPIView):
             return Response(dict,status=status.HTTP_200_OK)
         else:
             driver = return_driver()
-            import pandas as pd
-            import numpy as np
-            import time
-            import Product.clean_review as ct
-            from sklearn.feature_extraction.text import CountVectorizer
-            from sklearn.naive_bayes import MultinomialNB
-
             df = pd.DataFrame([], columns=list(['Titles']))
             dfx = pd.read_csv("amazonReviews.csv")  # to remove 'nan'
             dfx.dropna(subset=['reviews.rating'], inplace=True)
