@@ -18,7 +18,7 @@ from datetime import datetime, timezone
 import pandas as pd
 import numpy as np
 import time
-import Product.clean_review as ct
+
 from sklearn.feature_extraction.text import CountVectorizer
 from sklearn.naive_bayes import MultinomialNB
 
@@ -374,6 +374,7 @@ class Sentiment_Analysis_Amazon(GenericAPIView):
             driver = return_driver()
 
             df = pd.DataFrame([], columns=list(['Titles']))
+            import Product.clean_review as ct
             dfx = pd.read_csv("amazonReviews.csv")  # to remove 'nan'
             dfx.dropna(subset=['reviews.rating'], inplace=True)
 
@@ -468,6 +469,7 @@ class Sentiment_Analysis_Flipkart(GenericAPIView):
         else:
             driver = return_driver()
             df = pd.DataFrame([], columns=list(['Titles']))
+            import Product.clean_review as ct
             dfx = pd.read_csv("amazonReviews.csv")  # to remove 'nan'
             dfx.dropna(subset=['reviews.rating'], inplace=True)
 
