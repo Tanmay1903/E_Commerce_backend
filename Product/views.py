@@ -18,7 +18,6 @@ from datetime import datetime, timezone
 import pandas as pd
 import numpy as np
 import time
-
 from sklearn.feature_extraction.text import CountVectorizer
 from sklearn.naive_bayes import MultinomialNB
 
@@ -400,11 +399,9 @@ class Sentiment_Analysis_Amazon(GenericAPIView):
             mnb.fit(x_vec, y)  # Training
 
             driver.get("https://www.amazon.in/")
-            value = driver.find_element_by_xpath('//*[@id="nav-link-accountList"]/div/span').text
-            '''
-            #time.sleep(5)
+            time.sleep(5)
             search = driver.find_element_by_xpath('//*[@id="twotabsearchtextbox"]').send_keys(name)
-            #time.sleep(4)
+            time.sleep(4)
             ent = driver.find_element_by_xpath('//*[@id="nav-search-submit-text"]/input').click()
             time.sleep(5)
             try:
@@ -412,7 +409,7 @@ class Sentiment_Analysis_Amazon(GenericAPIView):
                     ent = driver.find_element_by_xpath('//*[@class="a-size-medium a-color-base a-text-normal"]').click()
                 except:
                     ent = driver.find_element_by_xpath('//*[@class="a-size-base-plus a-color-base a-text-normal"]').click()
-                time.sleep(2)
+                time.sleep(4)
                 driver.switch_to.window(driver.window_handles[-1])
                 #time.sleep(2)
                 amaz_name = driver.find_element_by_xpath('//*[@id="productTitle"]').text
@@ -420,7 +417,7 @@ class Sentiment_Analysis_Amazon(GenericAPIView):
                 ent = driver.find_element_by_xpath('//*[@id="reviews-medley-footer"]/div[2]/a').click()
                 time.sleep(2)
                 titles = []
-                while len(titles) < 10:
+                while len(titles) < 100:
                     values = driver.find_elements_by_xpath('//*[@class="a-row"]/a/span')
                     for i in values:
                         titles.append(i.text)
@@ -458,8 +455,7 @@ class Sentiment_Analysis_Amazon(GenericAPIView):
                 site = "Amazon",
                 Analysis_Result=data
             ).save()
-            '''
-            return Response(value, status=status.HTTP_200_OK)
+            return Response(data, status=status.HTTP_200_OK)
 
 class Sentiment_Analysis_Flipkart(GenericAPIView):
 
@@ -523,7 +519,7 @@ class Sentiment_Analysis_Flipkart(GenericAPIView):
                     pass
                 time.sleep(5)
                 titles = []
-                while len(titles) < 10:
+                while len(titles) < 100:
                     values = driver.find_elements_by_class_name("_2-N8zT")
                     for i in values:
                         titles.append(i.text)
