@@ -417,7 +417,7 @@ class Sentiment_Analysis_Amazon(GenericAPIView):
                 ent = driver.find_element_by_xpath('//*[@id="reviews-medley-footer"]/div[2]/a').click()
                 time.sleep(2)
                 titles = []
-                while len(titles) < 100:
+                while len(titles) < 10:
                     values = driver.find_elements_by_xpath('//*[@class="a-row"]/a/span')
                     for i in values:
                         titles.append(i.text)
@@ -525,7 +525,7 @@ class Sentiment_Analysis_Flipkart(GenericAPIView):
                     pass
                 time.sleep(5)
                 titles = []
-                while len(titles) < 100:
+                while len(titles) < 10:
                     values = driver.find_elements_by_class_name("_2-N8zT")
                     for i in values:
                         titles.append(i.text)
