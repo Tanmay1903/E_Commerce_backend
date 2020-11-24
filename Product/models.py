@@ -80,5 +80,6 @@ class Products(DynamicDocument):
         return form_dict
 
 class Analysis(DynamicDocument):
-    Productid = fields.IntField(unique = True)
+    Productid = fields.IntField()
     date_time = fields.DateTimeField()
+    site = fields.StringField()

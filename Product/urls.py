@@ -18,5 +18,6 @@ urlpatterns = [
     path('delete_bpic/',views.DeleteBackPic.as_view(),name='delete_bpic'),
     path('product_list/',views.product_list.as_view(),name='product_list'),
     path('get_product/<str:a>',views.get_product.as_view(),name='get_product'),
-    path('SentimentAnalysis/<str:a>',views.Sentiment_Analysis.as_view(),name='SentimentAnalysis'),
+    path('sentimentamazon/<str:a>',views.Sentiment_Analysis_Amazon.as_view(),name='sentimentamazon'),
+    path('sentimentflipkart/<str:a>',views.Sentiment_Analysis_Flipkart.as_view(),name='sentimentflipkart'),
 ]
