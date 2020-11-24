@@ -400,6 +400,8 @@ class Sentiment_Analysis_Amazon(GenericAPIView):
             mnb.fit(x_vec, y)  # Training
 
             driver.get("https://www.amazon.in/")
+            value = driver.find_element_by_xpath('//*[@id="nav-link-accountList"]/div/span').text
+            '''
             #time.sleep(5)
             search = driver.find_element_by_xpath('//*[@id="twotabsearchtextbox"]').send_keys(name)
             #time.sleep(4)
@@ -456,7 +458,8 @@ class Sentiment_Analysis_Amazon(GenericAPIView):
                 site = "Amazon",
                 Analysis_Result=data
             ).save()
-            return Response(data, status=status.HTTP_200_OK)
+            '''
+            return Response(value, status=status.HTTP_200_OK)
 
 class Sentiment_Analysis_Flipkart(GenericAPIView):
 
