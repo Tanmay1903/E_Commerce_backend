@@ -2,6 +2,7 @@ from django.contrib import messages
 from django.shortcuts import render
 from .serializers import ProductsSerializer,create, ProductlistSerializer, SearchSerializer, SearchProductSerializer
 from .models import Products,Analysis
+from Review.models import Rating
 from rest_framework.response import Response
 from rest_framework import status
 from rest_framework_mongoengine.generics import GenericAPIView,ValidationError
@@ -314,11 +315,11 @@ class DeleteBackPic(GenericAPIView):
         return Response({'message':'Invalid ID'},status=status.HTTP_400_BAD_REQUEST)
 
 def return_driver():
-    from pyvirtualdisplay import Display
+    #from pyvirtualdisplay import Display
     from selenium import webdriver
     from fake_useragent import UserAgent
-    display = Display(visible=0, size=(800, 600))
-    display.start()
+    #display = Display(visible=0, size=(800, 600))
+    #display.start()
 
     chrome_options = webdriver.ChromeOptions()
     ua = UserAgent()
@@ -345,18 +346,9 @@ def create_dict(name,price,percentage,accuracy):
 def check(a,site):
     try:
         prod = Analysis.objects.all()
-        print(site)
         for i in prod:
             if i['site'] == site and i['Productid'] == int(a):
-                print(i['site'])
-                datetime_now = datetime.now(timezone.utc)
-                diff = (datetime_now - i['date_time']).total_seconds() / 60
-                print(diff)
-                if diff < 10080:
-                    return i["Analysis_Result"]
-                else:
-                    prod.delete()
-                    return {}
+                return i["Analysis_Result"]
         return {}
     except:
         return {}
@@ -406,7 +398,7 @@ class Sentiment_Analysis_Amazon(GenericAPIView):
             time.sleep(5)
             try:
                 try:
-                    ent = driver.find_element_by_xpath('//*[@class="a-size-medium a-color-base a-text-normal"]').click()
+                    ent = driver.find_element_by_xpath('//*[@class="a-link-normal a-text-normal"]').click()
                 except:
                     ent = driver.find_element_by_xpath('//*[@class="a-size-base-plus a-color-base a-text-normal"]').click()
                 time.sleep(4)
@@ -414,20 +406,23 @@ class Sentiment_Analysis_Amazon(GenericAPIView):
                 #time.sleep(2)
                 amaz_name = driver.find_element_by_xpath('//*[@id="productTitle"]').text
                 amaz_price = driver.find_element_by_xpath('//*[@class="a-span12"]/span[1]').text
-                ent = driver.find_element_by_xpath('//*[@id="reviews-medley-footer"]/div[2]/a').click()
-                time.sleep(2)
-                titles = []
-                while len(titles) < 100:
-                    values = driver.find_elements_by_xpath('//*[@class="a-row"]/a/span')
-                    for i in values:
-                        titles.append(i.text)
-                        df1 = pd.DataFrame({"Titles": [i.text]})
-                        df = pd.concat([df, df1])
-                    try:
-                        ent = driver.find_element_by_xpath('//*[@id="cm_cr-pagination_bar"]/ul/li[2]/a').click()
-                        #time.sleep(5)
-                    except:
-                        break
+                try:
+                    ent = driver.find_element_by_xpath('//*[@id="reviews-medley-footer"]/div[2]/a').click()
+                    time.sleep(2)
+                    titles = []
+                    while len(titles) < 100:
+                        values = driver.find_elements_by_xpath('//*[@class="a-row"]/a/span')
+                        for i in values:
+                            titles.append(i.text)
+                            df1 = pd.DataFrame({"Titles": [i.text]})
+                            df = pd.concat([df, df1])
+                        try:
+                            ent = driver.find_element_by_xpath('//*[@id="cm_cr-pagination_bar"]/ul/li[2]/a').click()
+                            time.sleep(5)
+                        except:
+                            break
+                except:
+                    pass
             except:
                 driver.quit()
                 return Response({"message": "Oops! Something went Wrong! Check your Internet Connection."},
@@ -505,32 +500,54 @@ class Sentiment_Analysis_Flipkart(GenericAPIView):
             time.sleep(5)
             try:
                 try:
-                    ent = driver.find_element_by_xpath('//*[@id="container"]/div/div[3]/div[2]/div[1]/div[2]/div[2]/div/div/div/a/div[2]/div[1]/div[1]').click()
-                except:
-                    ent = driver.find_element_by_xpath('//*[@id="container"]/div/div[3]/div[2]/div[1]/div[2]/div[2]/div/div[1]/div/a[2]').click()
-                time.sleep(5)
-                driver.switch_to.window(driver.window_handles[-1])
-                time.sleep(2)
-                flip_name = driver.find_element_by_xpath('//*[@id="container"]/div/div[3]/div[1]/div[2]/div[2]/div/div[1]/h1/span').text
-                flip_price = driver.find_element_by_xpath('//*[@class="_30jeq3 _16Jk6d"]').text
-                try:
-                    ent = driver.find_element_by_xpath('//*[@class="_3UAT2v _16PBlm"]/span').click()
-                except:
-                    pass
-                time.sleep(5)
-                titles = []
-                while len(titles) < 100:
-                    values = driver.find_elements_by_class_name("_2-N8zT")
-                    for i in values:
-                        titles.append(i.text)
-                        df1 = pd.DataFrame({"Titles": [i.text]})
-                        df = pd.concat([df, df1])
                     try:
-                        ent = driver.find_elements_by_xpath('//*[@class="_1LKTO3"]')
-                        ent[-1].click()
-                        time.sleep(5)
+                        ent = driver.find_element_by_xpath('//*[@id="container"]/div/div[3]/div[2]/div[1]/div[2]/div[2]/div/div/div/a/div[2]/div[1]/div[1]').click()
                     except:
-                        break
+                        try:
+                            ent = driver.find_element_by_xpath('//*[@id="container"]/div/div[3]/div[2]/div[1]/div[2]/div[2]/div/div[1]/div/a[2]').click()
+                        except:
+                            ent = driver.find_element_by_xpath('//*[@class="_312yBx SFzpgZ"]').click()
+                    time.sleep(5)
+                    driver.switch_to.window(driver.window_handles[-1])
+                    time.sleep(2)
+                    flip_name = driver.find_element_by_xpath('//*[@class="B_NuCI"]').text
+                    flip_price = driver.find_element_by_xpath('//*[@class="_30jeq3 _16Jk6d"]').text
+                    try:
+                        ent = driver.find_element_by_xpath('//*[@class="_3UAT2v _16PBlm"]/span').click()
+                    except:
+                        try:
+                            ent = driver.find_element_by_xpath('//*[@class="_3UAT2v _33R3aa"]/span').click()
+                        except:
+                            pass
+                    time.sleep(5)
+                    titles = []
+                    while len(titles) < 100:
+                        values = driver.find_elements_by_class_name("_2-N8zT")
+                        if not values:
+                            values = driver.find_elements_by_class_name("_6K-7Co")
+                        for i in values:
+                            titles.append(i.text)
+                            df1 = pd.DataFrame({"Titles": [i.text]})
+                            df = pd.concat([df, df1])
+                        try:
+                            ent = driver.find_elements_by_xpath('//*[@class="_1LKTO3"]/span')
+                            ent[-1].click()
+                            time.sleep(5)
+                        except:
+                            break
+                except:
+                    message = driver.find_element_by_xpath('//*[@class="_3uTeW4"]').text
+                    if message:
+                        data = {"Flipkart": {"message": message}}
+                        driver.quit()
+
+                        Analysis(
+                            Productid=int(a),
+                            date_time=datetime.now(timezone.utc),
+                            site="Flipkart",
+                            Analysis_Result=data
+                        ).save()
+                        return Response(data, status=status.HTTP_200_OK)
             except:
                 driver.quit()
                 return Response({"message": "Oops! Something went Wrong! Check your Internet Connection."},
@@ -558,3 +575,54 @@ class Sentiment_Analysis_Flipkart(GenericAPIView):
                 Analysis_Result=data
             ).save()
             return Response(data, status=status.HTTP_200_OK)
+
+class Sentiment_Analysis(GenericAPIView):
+
+    def get(self,request,a):
+        prod = Products.objects.get(Productid=int(a))
+        name = prod['product_name']
+        price = prod['Price']
+        import Product.clean_review as ct
+        dfx = pd.read_csv("amazonReviews.csv")  # to remove 'nan'
+        dfx.dropna(subset=['reviews.rating'], inplace=True)
+
+        # to remove integer values
+        # In the regular expression \d stands for "any digit" and + stands for "one or more".
+        dfx['reviews.title'] = dfx['reviews.title'].str.replace('\d+', ' ')
+
+        x = dfx['reviews.title'].tolist()
+        y = dfx["reviews.rating"].tolist()
+
+        y = np.array(y)
+
+        for i in range(0, 1177):
+            if y[i] > 3:
+                y[i] = 1
+            else:
+                y[i] = 0
+
+        x_clean = [ct.getStemmedReview(i) for i in x]
+        cv = CountVectorizer()
+        x_vec = cv.fit_transform(x_clean).toarray()
+        mnb = MultinomialNB()
+        mnb.fit(x_vec, y)
+        groups = Rating.objects.all()
+        df = pd.DataFrame([], columns=list(['Titles']))
+        for i in groups:
+            if i['Productid'] == a:
+                df1 = pd.DataFrame({"Titles": [i["Review_Title"]]})
+                df = pd.concat([df, df1])
+        if df.empty:
+            data = {"message": "Not Enough Reviews for Analysis Found!"}
+        else:
+            dfxt = df
+            x_test = dfxt["Titles"]
+            xt_clean = [ct.getStemmedReview(i) for i in x_test]
+            xt_vec = cv.transform(xt_clean).toarray()
+            cv.get_feature_names()
+            overall = np.array(mnb.predict(xt_vec))
+            overall = np.average(overall)
+            Percentage = (overall * 100)
+            Accuracy = mnb.score(x_vec, y)
+            data = {'Sparkcart': create_dict(name, price, Percentage, Accuracy)}
+        return Response(data, status=status.HTTP_200_OK)

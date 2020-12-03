@@ -20,4 +20,5 @@ urlpatterns = [
     path('get_product/<str:a>',views.get_product.as_view(),name='get_product'),
     path('sentimentamazon/<str:a>',views.Sentiment_Analysis_Amazon.as_view(),name='sentimentamazon'),
     path('sentimentflipkart/<str:a>',views.Sentiment_Analysis_Flipkart.as_view(),name='sentimentflipkart'),
+    path('sentiment/<str:a>',views.Sentiment_Analysis.as_view(),name='sentiment'),
 ]
