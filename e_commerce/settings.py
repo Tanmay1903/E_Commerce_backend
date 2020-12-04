@@ -146,8 +146,8 @@ MEDIA_URL='/media/'
 
 EMAIL_USE_TLS = True
 EMAIL_HOST = 'smtp.gmail.com'
-EMAIL_HOST_USER = "tanmaysingla023@gmail.com"
-EMAIL_HOST_PASSWORD = "Aman bhai"
+EMAIL_HOST_USER = "sparkcart.rtv@gmail.com"
+EMAIL_HOST_PASSWORD = "Tanmayspkct@1903"
 EMAIL_PORT = 587
 
 CORS_ORIGIN_ALLOW_ALL = True
