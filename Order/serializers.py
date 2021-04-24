@@ -7,11 +7,12 @@ class AddcartSerializer(serializers.DynamicDocumentSerializer):
         model = Cart
         fields = ("Productid","Quantity")
 
-    def create(self,request, validated_data):
+    def create(self,request, validated_data, status):
         cart_obj = Cart(
             useremail = request.user.email,
             Productid = validated_data["Productid"],
-            Quantity = validated_data["Quantity"]
+            Quantity = validated_data["Quantity"],
+            status = status
         )
         cart_obj.save()
         return cart_obj.json()

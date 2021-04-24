@@ -19,11 +19,11 @@ class Add_to_cart(GenericAPIView):
         useremail = request.user.email
         Productid = data.get('Productid')
         q = data.get('Quantity')
-        obj = Cart.objects.filter(useremail=useremail, Productid=Productid)
+        obj = Cart.objects.filter(useremail=useremail, Productid=Productid,status = 'Cart')
         if not obj:
             serializer = AddcartSerializer(data=data)
             if serializer.is_valid():
-                return Response(serializer.create(request,data),status = status.HTTP_201_CREATED)
+                return Response(serializer.create(request,data,'Cart'),status = status.HTTP_201_CREATED)
             else:
                 return Response(serializer.errors,status=status.HTTP_400_BAD_REQUEST)
         else:
@@ -57,11 +57,11 @@ class getcart(GenericAPIView):
         cart = []
         groups = Cart.objects.all()
         for group in groups:
-            if group["useremail"] == useremail:
+            if group["useremail"] == useremail and group['status'] == 'Cart':
                 prod = Products.objects.get(Productid= group['Productid'])
                 cart.append(cartjson(prod,group["Quantity"]))
         if cart:
-                return Response(cart,status = status.HTTP_200_OK)
+            return Response(cart,status = status.HTTP_200_OK)
         else:
             return Response({"message":"No Products in your cart!"},status=status.HTTP_204_NO_CONTENT)
 
@@ -81,7 +81,7 @@ class Remove_from_cart(GenericAPIView):
         Productid = data.get('Productid')
         serializer = DeleteSerializer(data = data)
         if serializer.is_valid():
-            obj = Cart.objects.filter(useremail=useremail, Productid=Productid)
+            obj = Cart.objects.filter(useremail=useremail, Productid=Productid, status = 'Cart')
             if obj:
                 obj.delete()
                 return Response({"message":"Product removed from cart."},status=status.HTTP_200_OK)
@@ -102,3 +102,65 @@ class PlaceOrder(GenericAPIView):
         if serializer.is_valid():
             serializer.create(request,data)
 '''
+
+class Add_to_Wishlist(GenericAPIView):
+    serializer_class = AddcartSerializer
+    permission_classes = (IsAuthenticated,)
+
+    def get_queryset(self):
+        return Cart.objects.all()
+
+    def post(self,request):
+        data = request.data
+        useremail = request.user.email
+        Productid = data.get('Productid')
+        obj = Cart.objects.filter(useremail=useremail, Productid=Productid,status = 'Wishlist')
+        if not obj:
+            serializer = AddcartSerializer(data=data)
+            if serializer.is_valid():
+                return Response(serializer.create(request,data,'Wishlist'),status = status.HTTP_201_CREATED)
+            else:
+                return Response(serializer.errors,status=status.HTTP_400_BAD_REQUEST)
+        else:
+            return Response({"message":"Item Already in Wishlist"},status=status.HTTP_200_OK)
+
+class getWishlist(GenericAPIView):
+    permission_classes = (IsAuthenticated,)
+
+    def get(self,request):
+        useremail = request.user.email
+        cart = []
+        groups = Cart.objects.all()
+        for group in groups:
+            if group["useremail"] == useremail and group['status'] == 'Wishlist':
+                prod = Products.objects.get(Productid= group['Productid'])
+                cart.append(cartjson(prod,group["Quantity"]))
+        if cart:
+            return Response(cart,status = status.HTTP_200_OK)
+        else:
+            return Response({"message":"No Products in your cart!"},status=status.HTTP_204_NO_CONTENT)
+
+    def get_queryset(self):
+        return Cart.objects.all()
+
+class Remove_from_Wishlist(GenericAPIView):
+    serializer_class = DeleteSerializer
+    permission_classes = (IsAuthenticated,)
+
+    def get_queryset(self):
+        return Cart.objects.all()
+
+    def post(self, request):
+        data = request.data
+        useremail = request.user.email
+        Productid = data.get('Productid')
+        serializer = DeleteSerializer(data = data)
+        if serializer.is_valid():
+            obj = Cart.objects.filter(useremail=useremail, Productid=Productid, status = 'Wishlist')
+            if obj:
+                obj.delete()
+                return Response({"message":"Product removed from cart."},status=status.HTTP_200_OK)
+            else:
+                return Response({"message":"No product with this product id found."},status=status.HTTP_404_NOT_FOUND)
+        else:
+            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)

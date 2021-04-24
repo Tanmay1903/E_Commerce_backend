@@ -16,11 +16,13 @@ class Cart(DynamicDocument):
     useremail = fields.StringField(max_length=255)
     Productid = fields.IntField()
     Quantity = fields.IntField()
+    status = fields.StringField()
 
     def json(self):
         form_dict = {
             "useremail" : self.useremail,
             "Productid" : self.Productid,
-            "Quantity" : self.Quantity
+            "Quantity" : self.Quantity,
+            "status" : self.status
         }
         return form_dict
