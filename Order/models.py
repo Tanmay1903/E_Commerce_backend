@@ -2,9 +2,9 @@ from django_mongoengine import fields,DynamicDocument
 
 class OrderDetails(DynamicDocument):
     Useremail = fields.StringField(max_length=255)
-    Productid = fields.IntField()
+    Productid = fields.ListField()
     Order_date = fields.StringField(max_length=100)
-    Tracking_Number = fields.StringField(unique=True)
+    Tracking_Number = fields.IntField(unique=True)
     status = fields.StringField()
     Total_Price = fields.FloatField()
     Shipping_Address = fields.StringField(max_length = 500)

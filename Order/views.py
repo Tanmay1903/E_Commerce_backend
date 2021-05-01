@@ -1,5 +1,5 @@
 from django.shortcuts import render
-from .serializers import AddcartSerializer,DeleteSerializer #,PlaceOrderSerializer
+from .serializers import AddcartSerializer,DeleteSerializer ,PlaceOrderSerializer
 from .models import Cart,OrderDetails
 from Product.models import Products
 from rest_framework.response import Response
@@ -89,8 +89,9 @@ class Remove_from_cart(GenericAPIView):
                 return Response({"message":"No product with this product id found."},status=status.HTTP_404_NOT_FOUND)
         else:
             return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-'''
+
 class PlaceOrder(GenericAPIView):
+    permission_classes = (IsAuthenticated,)
     serializer_class = PlaceOrderSerializer
 
     def get_queryset(self):
@@ -100,8 +101,28 @@ class PlaceOrder(GenericAPIView):
         data = request.data
         serializer = PlaceOrderSerializer(data = data)
         if serializer.is_valid():
-            serializer.create(request,data)
-'''
+            return Response(serializer.create(request,data,'Order Placed'),status = status.HTTP_201_CREATED)
+        else:
+            return Response(serializer.errors,status=status.HTTP_400_BAD_REQUEST)
+
+class GetMyOrders(GenericAPIView):
+    permission_classes = (IsAuthenticated,)
+
+    def get_queryset(self):
+        return OrderDetails.objects.all()
+
+    def get(self,request):
+        useremail = request.user.email
+        orders = []
+        groups = OrderDetails.objects.all()
+        for group in groups:
+            if group['useremail'] == useremail:
+                prod = Products.objects.get(Productid=group['Productid'])
+                orders.append(group)
+        if orders:
+            return Response(orders,status=status.HTTP_200_OK)
+        else:
+            return Response({"message":"You have no orders placed yet"},status =status.HTTP_204_NO_CONTENT)
 
 class Add_to_Wishlist(GenericAPIView):
     serializer_class = AddcartSerializer

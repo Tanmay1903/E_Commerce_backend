@@ -46,6 +46,7 @@ def create(data,FP,BP):
     prod_obj.FrontPic = FP
     prod_obj.BackPic = BP
     prod_obj.manufacturing_details.append(m)
+    prod_obj.manufacturing_details.append(m)
     prod_obj.Shipping_details.append(s)
     prod_obj.Date_added = str(datetime.now())
     prod_obj.Date_modified = None
