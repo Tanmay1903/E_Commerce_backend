@@ -57,7 +57,6 @@ class Products(DynamicDocument):
         "Productid" : self.Productid,
         "product_name" : self.product_name,
         "Description" : self.Description,
-        "Quantity" : self.Quantity,
         "Price" : self.Price,
         "Category" : self.Category,
         "Discount" : self.Discount,
@@ -65,6 +64,7 @@ class Products(DynamicDocument):
         "Model" : self.Model,
         "FrontPic" : self.FrontPic,
         "BackPic" : self.BackPic,
+        "OverallRating": self.OverallRating,
         "manufacturing_details" : {
                                     "Model_no" : self.manufacturing_details[0]["Model_no"],
                                     "Release_date" : self.manufacturing_details[0]["Release_date"],
