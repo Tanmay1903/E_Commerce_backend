@@ -65,17 +65,17 @@ class Products(DynamicDocument):
         "FrontPic" : self.FrontPic,
         "BackPic" : self.BackPic,
         "OverallRating": self.OverallRating,
-        "manufacturing_details" : {
+        "manufacturing_details" : [{
                                     "Model_no" : self.manufacturing_details[0]["Model_no"],
                                     "Release_date" : self.manufacturing_details[0]["Release_date"],
                                     "Batch_no" : self.manufacturing_details[0]["Batch_no"]
-                                    },
-        "Shipping_details" : {
+                                    }],
+        "Shipping_details" : [{
                             "Weight" : self.Shipping_details[0]["Weight"],
                             "Height" : self.Shipping_details[0]["Height"],
                             "Width" : self.Shipping_details[0]["Width"],
                             "Depth" : self.Shipping_details[0]["Depth"]
-                                },
+                                }],
         }
         return form_dict
 
