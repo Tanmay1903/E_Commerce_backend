@@ -107,6 +107,7 @@ class PlaceOrder(GenericAPIView):
 
 class GetMyOrders(GenericAPIView):
     permission_classes = (IsAuthenticated,)
+    serializer_class = PlaceOrderSerializer
 
     def get_queryset(self):
         return OrderDetails.objects.all()

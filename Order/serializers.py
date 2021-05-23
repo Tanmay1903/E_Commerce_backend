@@ -28,7 +28,7 @@ class DeleteSerializer(serializers.DynamicDocumentSerializer):
 class PlaceOrderSerializer(serializers.DynamicDocumentSerializer):
     class Meta:
         model = OrderDetails
-        fields = ("Productid","Total_Price","Shipping_Address","Payment_type","Quantity")
+        fields = ("Productid","Total_Price","Amount_Payable","Shipping_Address","Payment_type","Quantity")
 
     def create(self,request,data,status):
         order_obj = OrderDetails(
@@ -38,6 +38,7 @@ class PlaceOrderSerializer(serializers.DynamicDocumentSerializer):
             id = uuid.uuid1(),
             status = status,
             Total_Price = data['Total_Price'],
+            Amount_Payable = data['Amount_Payable'],
             Shipping_Address = data['Shipping_Address'],
             Payment_type = data['Payment_type'],
             Quantity = data['Quantity']

@@ -7,6 +7,7 @@ class OrderDetails(DynamicDocument):
     Tracking_Number = fields.IntField(unique=True)
     status = fields.StringField()
     Total_Price = fields.FloatField()
+    Amount_Payable = fields.FloatField()
     Shipping_Address = fields.StringField(max_length = 500)
     Payment_type = fields.StringField(max_length=100)
     Quantity = fields.IntField()
