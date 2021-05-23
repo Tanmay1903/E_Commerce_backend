@@ -101,7 +101,8 @@ class PlaceOrder(GenericAPIView):
         data = request.data
         serializer = PlaceOrderSerializer(data = data)
         if serializer.is_valid():
-            return Response(serializer.create(request,data,'Order Placed'),status = status.HTTP_201_CREATED)
+            serializer.create(request, data, 'Order Placed')
+            return Response({"message":"Order has been placed successfully"},status = status.HTTP_201_CREATED)
         else:
             return Response(serializer.errors,status=status.HTTP_400_BAD_REQUEST)
 
