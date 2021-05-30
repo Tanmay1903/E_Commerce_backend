@@ -32,10 +32,10 @@ class PlaceOrderSerializer(serializers.DynamicDocumentSerializer):
 
     def create(self,request,data,status):
         order_obj = OrderDetails(
-            useremail = request.user.email,
+            Useremail = request.user.email,
             Productid = data['Productid'],
-            Order_date = datetime.now(),
-            id = uuid.uuid1(),
+            Order_date = str(datetime.now()),
+            Tracking_Number = uuid.uuid1().time_low,
             status = status,
             Total_Price = data['Total_Price'],
             Amount_Payable = data['Amount_Payable'],
