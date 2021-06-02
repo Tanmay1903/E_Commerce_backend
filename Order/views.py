@@ -90,6 +90,28 @@ class Remove_from_cart(GenericAPIView):
         else:
             return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
+class Save_for_Later(GenericAPIView):
+    serializer_class = DeleteSerializer
+    permission_classes = (IsAuthenticated,)
+
+    def get_queryset(self):
+        return Cart.objects.all()
+
+    def post(self,request):
+        data = request.data
+        useremail = request.user.email
+        Productid = data.get('Productid')
+        serializer = DeleteSerializer(data=data)
+        if serializer.is_valid():
+            obj = Cart.objects.filter(useremail=useremail, Productid=Productid, status='Cart')
+            if obj:
+                obj.update(status='Wishlist')
+                return Response({"message":"Product has been moved to wishlist"},status=status.HTTP_200_OK)
+            else:
+                return Response({"message":"Product not in your cart"},status=status.HTTP_409_CONFLICT)
+        else:
+            return Response(serializer.errors,status=status.HTTP_400_BAD_REQUEST)
+
 class PlaceOrder(GenericAPIView):
     permission_classes = (IsAuthenticated,)
     serializer_class = PlaceOrderSerializer
