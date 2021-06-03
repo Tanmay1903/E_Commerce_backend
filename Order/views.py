@@ -138,11 +138,15 @@ class GetMyOrders(GenericAPIView):
     def get(self,request):
         useremail = request.user.email
         orders = []
+
         groups = OrderDetails.objects.all()
         for group in groups:
-            if group['useremail'] == useremail:
-                prod = Products.objects.get(Productid=group['Productid'])
-                orders.append(group)
+            products = []
+            if group['Useremail'] == useremail:
+                for i in group['Productid']:
+                    prod = Products.objects.get(Productid=i['Productid'])
+                    products.append(cartjson(prod,i['Quantity']))
+                orders.append(group.json(products))
         if orders:
             return Response(orders,status=status.HTTP_200_OK)
         else:

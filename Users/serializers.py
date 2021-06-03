@@ -76,6 +76,19 @@ class UserSerializer(serializers.DocumentSerializer):
         model=User
         fields=("userid","first_name","last_name","address","phone_no","email","username")
 
+class AddressSerializer(serializers.DocumentSerializer):
+    class Meta():
+        model = User
+        fields = ("address",)
+
+
+class AddressUpdateSerializer(serializers.DocumentSerializer):
+    new_address=ser.CharField()
+    class Meta():
+        model = User
+        fields = ("new_address","address")
+
+
 class ResendVerificationSerializer(serializers.DocumentSerializer):
     class Meta():
         model = User

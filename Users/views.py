@@ -6,7 +6,8 @@ from rest_framework.permissions import AllowAny
 from django.http import HttpResponse
 from rest_framework import status
 from .serializers import UserLoginSerializer, UserCreateSerializer, UserLogoutSerializer, UserSerializer, \
-ResendVerificationSerializer, EmailUpdateSerializer, PasswordSerializer, Passwordupdateserializer, FirstNameSerializer,LastNameSerializer
+ResendVerificationSerializer, EmailUpdateSerializer, PasswordSerializer, Passwordupdateserializer, FirstNameSerializer,LastNameSerializer, \
+    AddressSerializer, AddressUpdateSerializer
 from django.contrib.auth import login, logout
 from .auth import IsAuthenticated
 from django_mongoengine.mongo_auth.managers import get_user_document
@@ -361,3 +362,104 @@ class update_lastname(GenericAPIView):
             User.objects.filter(email=Email).update(last_name=data['last_name'])
             return Response(serializer.data, status=status.HTTP_201_CREATED)
         return Response(serializer.errors,status=status.HTTP_400_BAD_REQUEST)
+
+
+class AddressView(CreateAPIView):
+    '''
+    An api for the user to add address
+    '''
+    serializer_class = AddressSerializer
+    permission_classes = (IsAuthenticated,)
+
+    def post(self, request, *args, **kwargs):
+        data = request.data
+        email = request.user.email
+        add = request.data.get('address')
+        try:
+            user = User.objects.get(email=email)
+        except User.DoesNotExist:
+            return Response({"message":"User does not exist!"}, status=status.HTTP_400_BAD_REQUEST)
+        serializer = AddressSerializer(user, data=data)
+        try:
+            if serializer.is_valid():
+                if len(user.address) == 4:
+                    return Response({"message":"delete an address to add new one"},status = status.HTTP_409_CONFLICT)
+                else:
+                    l = []
+                    l.append(add["address"])
+                    for i in user.address:
+                        l.append(user.address[i])
+                    for i in range(len(l)):
+                        user.address[str(i)] = l[i]
+                    user.save()
+                    return Response({"message":"address succesfully saved"}, status=status.HTTP_200_OK)
+        except ValidationError as e:
+            return Response(str(e), status=status.HTTP_400_BAD_REQUEST)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+class Addressdeleteview(CreateAPIView):
+    '''
+    An api for the user to delete address
+    '''
+    serializer_class = AddressSerializer
+    permission_classes = (IsAuthenticated,)
+
+    def post(self,request):
+        data = request.data
+        email=request.user.email
+        add = request.data.get('address')
+        try:
+            user = User.objects.get(email=email)
+        except User.DoesNotExist:
+            return Response({"message":"User does not exist!"}, status=status.HTTP_400_BAD_REQUEST)
+        serializer = AddressSerializer(user, data=data)
+        try:
+            if serializer.is_valid():
+                for i in user.address:
+                    if user.address[i]==add["address"]:
+                        del user.address[i]
+                        user.save()
+                        return Response({"message":"successfully deleted"}, status=status.HTTP_200_OK)
+                return Response({"message":"address not found"},status=status.HTTP_404_NOT_FOUND)
+            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+        except ValidationError as e:
+            return Response(str(e), status=status.HTTP_400_BAD_REQUEST)
+
+
+class Addresslistview(GenericAPIView):
+    '''
+    An api for the user to show the addresses
+    '''
+    permission_classes = (IsAuthenticated,)
+
+    def get(self, request):
+        return Response(request.user.address,status=status.HTTP_200_OK)
+
+class Addressupdateview(CreateAPIView):
+    '''
+    An api for the customer to update the address
+    '''
+    serializer_class = AddressUpdateSerializer
+    permission_classes = (IsAuthenticated,)
+
+    def get(self, request):
+        return Response(request.user.address,status=status.HTTP_200_OK)
+
+    def post(self,request):
+        data = request.data
+        email=request.user.email
+        new_add=request.data.get('new_address')
+        add = request.data.get('address')
+        user = User.objects.get(email=email)
+        serializer = AddressUpdateSerializer(user, data=data)
+        try:
+            if serializer.is_valid():
+                for i in user.address:
+                    if user.address[i]==add["address"]:
+                        user.address[i] = new_add
+                        user.save()
+                        return Response({"message":"Address updated successfully."},status=status.HTTP_200_OK)
+                return Response({"message":"address not found for update"},status=status.HTTP_404_NOT_FOUND)
+        except ValidationError as e:
+            return Response(str(e), status=status.HTTP_400_BAD_REQUEST)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)

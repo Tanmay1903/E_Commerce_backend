@@ -12,6 +12,20 @@ class OrderDetails(DynamicDocument):
     Payment_type = fields.StringField(max_length=100)
     Quantity = fields.IntField()
 
+    def json(self,products):
+        form_dict = {
+            "Useremail" : self.Useremail,
+            "Productid" : products,
+            "Order_date": self.Order_date,
+            "Tracking_Number": self.Tracking_Number,
+            "status" : self.status,
+            "Total_Price": self.Total_Price,
+            "Shipping_Address": self.Shipping_Address,
+            "Payment_type": self.Payment_type,
+            "Quantity": self.Quantity
+        }
+        return form_dict
+
 
 class Cart(DynamicDocument):
     useremail = fields.StringField(max_length=255)
