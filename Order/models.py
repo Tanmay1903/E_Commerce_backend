@@ -14,7 +14,6 @@ class OrderDetails(DynamicDocument):
 
     def json(self,products):
         form_dict = {
-            "Useremail" : self.Useremail,
             "Productid" : products,
             "Order_date": self.Order_date,
             "Tracking_Number": self.Tracking_Number,
