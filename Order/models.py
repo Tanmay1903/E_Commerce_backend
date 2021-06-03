@@ -19,6 +19,7 @@ class OrderDetails(DynamicDocument):
             "Tracking_Number": self.Tracking_Number,
             "status" : self.status,
             "Total_Price": self.Total_Price,
+            "Amount_Payable": self.Amount_Payable,
             "Shipping_Address": self.Shipping_Address,
             "Payment_type": self.Payment_type,
             "Quantity": self.Quantity
