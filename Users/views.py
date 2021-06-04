@@ -392,7 +392,7 @@ class AddressView(CreateAPIView):
                     for i in range(len(l)):
                         user.address[str(i)] = l[i]
                     user.save()
-                    return Response({"message":"address succesfully saved"}, status=status.HTTP_200_OK)
+                    return Response({"message":"address succesfully saved"}, status=status.HTTP_201_CREATED)
         except ValidationError as e:
             return Response(str(e), status=status.HTTP_400_BAD_REQUEST)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
