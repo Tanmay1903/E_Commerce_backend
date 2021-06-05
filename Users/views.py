@@ -433,7 +433,10 @@ class Addresslistview(GenericAPIView):
     permission_classes = (IsAuthenticated,)
 
     def get(self, request):
-        return Response(request.user.address,status=status.HTTP_200_OK)
+        address = request.user.address
+        if address:
+            return Response(request.user.address,status=status.HTTP_200_OK)
+        return Response({"message": "No Addressses added yet"}, status=status.HTTP_204_NO_CONTENT)
 
 class Addressupdateview(CreateAPIView):
     '''
